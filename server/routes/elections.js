@@ -1,0 +1,23 @@
+const express = require('express');
+const router = express.Router();
+const { createElection, getElections, getElectionById, addCandidate, vote, updateElection, deleteElection, checkEligibility } = require('../controllers/electionController');
+const { protect } = require('../middleware/authMiddleware');
+
+router.route('/')
+    .post(protect, createElection)
+    .get(protect, getElections);
+
+router.route('/:id')
+    .get(getElectionById)
+    .put(protect, updateElection)
+    .delete(protect, deleteElection);
+
+router.use('/:id/voters', require('./voters'));
+
+router.route('/:id/candidates')
+    .post(protect, addCandidate);
+
+router.post('/:id/vote', vote);
+router.post('/:id/check-eligibility', checkEligibility);
+
+module.exports = router;
