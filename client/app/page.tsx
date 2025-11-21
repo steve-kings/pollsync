@@ -114,7 +114,7 @@ export default function HomePage() {
                         </div>
                         <div className="relative h-[600px] rounded-2xl overflow-hidden shadow-2xl scale-in border-8 border-white/50 backdrop-blur-sm">
                             <Image
-                                src=""
+                                src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80"
                                 alt="PollSync Dashboard Interface"
                                 fill
                                 className="object-cover"
