@@ -218,9 +218,9 @@ export default function DashboardPage() {
                                 <span className="text-xl font-bold text-gray-900">PollSync</span>
                             </Link>
                         </div>
-                        <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-2 sm:space-x-4">
                             {/* Real-time connection indicator */}
-                            <div className="flex items-center space-x-2">
+                            <div className="hidden sm:flex items-center space-x-2">
                                 <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-gray-300'}`}></div>
                                 <span className="text-xs text-gray-500 hidden md:block">
                                     {isConnected ? 'Live' : 'Offline'}
@@ -245,35 +245,35 @@ export default function DashboardPage() {
                                         setIsLoading(false);
                                     }
                                 }}
-                                className="text-gray-500 hover:text-green-600 transition-colors"
+                                className="text-gray-500 hover:text-green-600 transition-colors p-2"
                                 title="Refresh Dashboard"
                             >
                                 <i className={`fas fa-sync-alt ${isLoading ? 'fa-spin' : ''}`}></i>
                             </button>
                             
                             <div className="flex items-center space-x-2">
-                                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold">
+                                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold text-sm">
                                     {user?.username?.charAt(0).toUpperCase()}
                                 </div>
-                                <span className="text-sm font-medium text-gray-700 hidden md:block">{user?.username}</span>
+                                <span className="text-sm font-medium text-gray-700 hidden lg:block">{user?.username}</span>
                             </div>
                             <Link
                                 href="/dashboard/organizations"
-                                className="text-gray-500 hover:text-green-600 transition-colors"
+                                className="text-gray-500 hover:text-green-600 transition-colors p-2 hidden sm:block"
                                 title="Organizations"
                             >
                                 <i className="fas fa-building"></i>
                             </Link>
                             <Link
                                 href="/dashboard/profile"
-                                className="text-gray-500 hover:text-green-600 transition-colors"
+                                className="text-gray-500 hover:text-green-600 transition-colors p-2 hidden md:block"
                                 title="Profile Settings"
                             >
                                 <i className="fas fa-user-cog"></i>
                             </Link>
                             <button
                                 onClick={logout}
-                                className="text-gray-500 hover:text-red-600 transition-colors"
+                                className="text-gray-500 hover:text-red-600 transition-colors p-2"
                                 title="Logout"
                             >
                                 <i className="fas fa-sign-out-alt"></i>
@@ -330,23 +330,23 @@ export default function DashboardPage() {
                             ? 'bg-red-50 border-red-200' 
                             : 'bg-green-50 border-green-200'
                     }`}>
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <div className="flex items-center space-x-4">
-                                <div className={`w-16 h-16 rounded-full flex items-center justify-center ${
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div className="flex items-center space-x-3 sm:space-x-4">
+                                <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center ${
                                     creditStatus.electionPackages.available === 0 
                                         ? 'bg-red-100 text-red-600' 
                                         : 'bg-green-100 text-green-600'
                                 }`}>
-                                    <i className="fas fa-box text-2xl"></i>
+                                    <i className="fas fa-box text-xl sm:text-2xl"></i>
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-bold text-gray-900">Election Packages</h3>
-                                    <p className="text-sm text-gray-600">{creditStatus.message}</p>
+                                    <h3 className="text-base sm:text-lg font-bold text-gray-900">Election Packages</h3>
+                                    <p className="text-xs sm:text-sm text-gray-600">{creditStatus.message}</p>
                                 </div>
                             </div>
-                            <div className="flex items-center space-x-6">
+                            <div className="flex flex-wrap items-center gap-4 sm:gap-6">
                                 <div className="text-center">
-                                    <div className={`text-4xl font-bold ${
+                                    <div className={`text-3xl sm:text-4xl font-bold ${
                                         creditStatus.electionPackages.available === 0 
                                             ? 'text-red-600' 
                                             : 'text-green-600'
@@ -358,7 +358,7 @@ export default function DashboardPage() {
                                 {creditStatus.electionPackages.available === 0 && (
                                     <Link
                                         href="/pricing"
-                                        className="px-6 py-3 rounded-lg font-semibold transition-all bg-red-600 hover:bg-red-700 text-white"
+                                        className="px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold transition-all bg-red-600 hover:bg-red-700 text-white text-sm sm:text-base"
                                     >
                                         <i className="fas fa-plus mr-2"></i>
                                         Buy Package
@@ -370,7 +370,7 @@ export default function DashboardPage() {
                 )}
 
                 {/* Stats Overview */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-10">
                     {/* Total Elections */}
                     <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl shadow-sm border border-blue-200 hover:shadow-md transition-all transform hover:-translate-y-1">
                         <div className="flex items-center justify-between mb-4">
@@ -470,7 +470,7 @@ export default function DashboardPage() {
                             </Link>
                         </div>
                     ) : (
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                             {elections.map((election) => (
                                 <div key={election._id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all h-full flex flex-col">
                                     <div className="h-2 bg-green-500 w-full"></div>

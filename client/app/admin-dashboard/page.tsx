@@ -247,17 +247,17 @@ export default function AdminDashboard() {
                                 <span className="text-xl font-bold text-white">PollSync Admin</span>
                             </Link>
                         </div>
-                        <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-2 sm:space-x-3 md:space-x-4">
                             <Link
                                 href="/admin/pricing"
-                                className="text-purple-100 hover:text-white transition-colors"
+                                className="text-purple-100 hover:text-white transition-colors p-2 hidden md:block"
                                 title="Manage Pricing"
                             >
                                 <i className="fas fa-dollar-sign"></i>
                             </Link>
                             <Link
                                 href="/admin/bulk-email"
-                                className="text-purple-100 hover:text-white transition-colors"
+                                className="text-purple-100 hover:text-white transition-colors p-2 hidden md:block"
                                 title="Send Bulk Email"
                             >
                                 <i className="fas fa-envelope"></i>
@@ -265,7 +265,7 @@ export default function AdminDashboard() {
                             <button
                                 onClick={fetchData}
                                 disabled={isLoading}
-                                className="text-purple-100 hover:text-white transition-colors"
+                                className="text-purple-100 hover:text-white transition-colors p-2"
                                 title="Refresh Dashboard"
                             >
                                 <i className={`fas fa-sync-alt ${isLoading ? 'fa-spin' : ''}`}></i>
@@ -273,7 +273,7 @@ export default function AdminDashboard() {
                             <button
                                 onClick={handleExportFinancialReport}
                                 disabled={isExporting}
-                                className="text-purple-100 hover:text-white transition-colors"
+                                className="text-purple-100 hover:text-white transition-colors p-2 hidden sm:block"
                                 title="Export Financial Report"
                             >
                                 <i className={`fas ${isExporting ? 'fa-spinner fa-spin' : 'fa-file-pdf'}`}></i>
@@ -281,28 +281,28 @@ export default function AdminDashboard() {
                             <button
                                 onClick={handleBackupData}
                                 disabled={isExporting}
-                                className="text-purple-100 hover:text-white transition-colors"
+                                className="text-purple-100 hover:text-white transition-colors p-2 hidden sm:block"
                                 title="Backup System Data"
                             >
                                 <i className={`fas ${isExporting ? 'fa-spinner fa-spin' : 'fa-download'}`}></i>
                             </button>
-                            <div className="flex items-center space-x-2">
-                                <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-bold">
+                            <div className="flex items-center space-x-1 sm:space-x-2">
+                                <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-bold text-sm">
                                     {user?.username?.charAt(0).toUpperCase()}
                                 </div>
-                                <span className="text-sm font-medium text-white hidden md:block">{user?.username}</span>
-                                <span className="text-xs bg-yellow-400 text-purple-900 px-2 py-1 rounded-full font-bold">ADMIN</span>
+                                <span className="text-sm font-medium text-white hidden lg:block">{user?.username}</span>
+                                <span className="text-xs bg-yellow-400 text-purple-900 px-2 py-1 rounded-full font-bold hidden sm:inline">ADMIN</span>
                             </div>
                             <Link
                                 href="/dashboard/profile"
-                                className="text-purple-100 hover:text-white transition-colors"
+                                className="text-purple-100 hover:text-white transition-colors p-2 hidden md:block"
                                 title="Profile Settings"
                             >
                                 <i className="fas fa-user-cog"></i>
                             </Link>
                             <button
                                 onClick={logout}
-                                className="text-purple-100 hover:text-red-200 transition-colors"
+                                className="text-purple-100 hover:text-red-200 transition-colors p-2"
                                 title="Logout"
                             >
                                 <i className="fas fa-sign-out-alt"></i>
@@ -339,8 +339,8 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Tab Navigation */}
-                <div className="mb-8 border-b border-gray-200">
-                    <nav className="-mb-px flex space-x-8">
+                <div className="mb-8 border-b border-gray-200 overflow-x-auto">
+                    <nav className="-mb-px flex space-x-4 sm:space-x-8 min-w-max sm:min-w-0">
                         <button
                             onClick={() => setActiveTab('overview')}
                             className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === 'overview'
@@ -378,7 +378,7 @@ export default function AdminDashboard() {
                 {activeTab === 'overview' && (
                     <div>
                         {/* Stats Cards */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-10">
                             <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white shadow-lg">
                                 <div className="flex items-center justify-between mb-2">
                                     <i className="fas fa-chart-bar text-3xl opacity-80"></i>
@@ -413,7 +413,7 @@ export default function AdminDashboard() {
                         </div>
 
                         {/* Recent Activity */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                             {/* Recent Elections */}
                             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                                 <h3 className="text-lg font-bold text-gray-900 mb-4">Recent Elections</h3>
