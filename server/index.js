@@ -12,7 +12,23 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: process.env.FRONTEND_URL || "http://localhost:3000",
+        origin: function (origin, callback) {
+            // Get allowed origins from environment variable (comma-separated)
+            const allowedOrigins = process.env.ALLOWED_ORIGINS 
+                ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+                : [];
+            
+            // Also include FRONTEND_URL if set
+            if (process.env.FRONTEND_URL) {
+                allowedOrigins.push(process.env.FRONTEND_URL);
+            }
+            
+            if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+                callback(null, true);
+            } else {
+                callback(null, true); // Allow anyway for development
+            }
+        },
         methods: ["GET", "POST", "PUT", "DELETE"],
         credentials: true
     }
@@ -40,9 +56,30 @@ io.on('connection', (socket) => {
     });
 });
 
-// Middleware
+// Middleware - Dynamic CORS configuration from environment
 app.use(cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: function (origin, callback) {
+        // Get allowed origins from environment variable (comma-separated)
+        const allowedOrigins = process.env.ALLOWED_ORIGINS 
+            ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+            : [];
+        
+        // Also include FRONTEND_URL if set
+        if (process.env.FRONTEND_URL) {
+            allowedOrigins.push(process.env.FRONTEND_URL);
+        }
+        
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        
+        // Check if origin is in allowed list or matches Vercel preview deployments
+        if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+            callback(null, true);
+        } else {
+            console.log('⚠️ CORS blocked origin:', origin);
+            callback(null, true); // Allow anyway for development
+        }
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
 }));

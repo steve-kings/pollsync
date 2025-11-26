@@ -28,7 +28,15 @@ export default function RegisterPage() {
                 phoneNumber
             });
 
-            router.push('/login?registered=true');
+            // Check if user came from pricing page
+            const params = new URLSearchParams(window.location.search);
+            const redirect = params.get('redirect');
+            
+            if (redirect === 'pricing') {
+                router.push('/login?registered=true&redirect=pricing');
+            } else {
+                router.push('/login?registered=true');
+            }
         } catch (err: any) {
             setError(err.response?.data?.message || 'Registration failed');
         } finally {

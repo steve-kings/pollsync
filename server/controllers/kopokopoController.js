@@ -53,7 +53,16 @@ exports.initiateSTKPush = async (req, res) => {
     console.log('=== STK Push Request ===');
     console.log('Phone:', phoneNumber);
     console.log('Amount:', amount);
-    console.log('User:', req.user ? req.user._id : 'No user (guest)');
+    console.log('User:', req.user._id);
+
+    // CRITICAL: Ensure user is authenticated
+    if (!req.user || !req.user._id) {
+        console.log('❌ SECURITY: Payment attempt without authentication');
+        return res.status(401).json({ 
+            success: false, 
+            message: 'You must be logged in to make a payment. Please log in or create an account first.' 
+        });
+    }
 
     // Basic validation
     if (!phoneNumber || !amount) {
@@ -95,7 +104,7 @@ exports.initiateSTKPush = async (req, res) => {
             currency: 'KES',
             status: 'Pending',
             phoneNumber: formattedPhone,
-            userId: req.user ? req.user._id : null,
+            userId: req.user._id, // User is guaranteed to exist now
             plan: planDetails ? planDetails.plan : null,
             voterLimit: planDetails ? planDetails.voterLimit : 0,
             metadata: { testMode: true }
@@ -103,7 +112,7 @@ exports.initiateSTKPush = async (req, res) => {
         await transaction.save();
 
         // Store user ID for use in setTimeout
-        const userId = req.user ? req.user._id.toString() : null;
+        const userId = req.user._id.toString();
         const io = req.app.get('io');
 
         // Simulate async payment processing (happens in background)
@@ -203,14 +212,15 @@ exports.initiateSTKPush = async (req, res) => {
             till_number: process.env.KOPOKOPO_TILL_NUMBER,
             subscriber: {
                 phone_number: formattedPhone,
-                email: req.user ? req.user.email : 'guest@pollsync.com'
+                email: req.user.email // User is guaranteed to exist
             },
             amount: {
                 currency: 'KES',
                 value: amount
             },
             metadata: {
-                user_id: req.user ? req.user._id : 'guest',
+                user_id: req.user._id.toString(),
+                username: req.user.username,
                 purpose: 'ELECTION_PAYMENT'
             },
             _links: {
@@ -245,7 +255,7 @@ exports.initiateSTKPush = async (req, res) => {
             currency: 'KES',
             status: 'Pending',
             phoneNumber: formattedPhone,
-            userId: req.user ? req.user._id : null,
+            userId: req.user._id, // User is guaranteed to exist
             plan: planDetails ? planDetails.plan : null,
             voterLimit: planDetails ? planDetails.voterLimit : 0,
             metadata: { 

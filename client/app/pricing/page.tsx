@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import PaymentButton from '@/components/payment/payment';
 import { useAuth } from '@/context/AuthContext';
 import MobileMenu from '@/components/MobileMenu';
@@ -18,66 +19,113 @@ interface PricingPlan {
 
 export default function PricingPage() {
     const { user } = useAuth();
+    const router = useRouter();
     const [phoneNumber, setPhoneNumber] = useState('');
-    const [selectedPlan, setSelectedPlan] = useState<{ name: string; price: number; voters: string } | null>(null);
+    const [selectedPlan, setSelectedPlan] = useState<{ name: string; price: number; voters: string; planId: string } | null>(null);
     const [plans, setPlans] = useState<PricingPlan[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         fetchPricing();
-    }, []);
+        
+        // Restore selected plan if user just logged in
+        if (user) {
+            const savedPlan = localStorage.getItem('selectedPlan');
+            if (savedPlan) {
+                try {
+                    const plan = JSON.parse(savedPlan);
+                    setSelectedPlan(plan);
+                    localStorage.removeItem('selectedPlan'); // Clear after restoring
+                } catch (error) {
+                    console.error('Error restoring selected plan:', error);
+                }
+            }
+        }
+    }, [user]);
 
     const fetchPricing = async () => {
         try {
             const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
             console.log('🔍 Fetching pricing from:', `${API_URL}/pricing`);
+            console.log('🌍 Environment:', process.env.NODE_ENV);
+            
             const response = await fetch(`${API_URL}/pricing`, {
-                cache: 'no-store', // Disable caching
+                cache: 'no-store',
                 headers: {
                     'Content-Type': 'application/json',
-                }
+                },
+                mode: 'cors'
             });
+            
             console.log('📊 Response status:', response.status);
+            console.log('📊 Response ok:', response.ok);
+            
             if (response.ok) {
                 const data = await response.json();
-                console.log('✅ Pricing data received:', data.plans?.length, 'plans');
-                setPlans(data.plans);
+                console.log('✅ Pricing data received:', data);
+                console.log('✅ Plans count:', data.plans?.length);
+                
+                if (data.success && data.plans && data.plans.length > 0) {
+                    setPlans(data.plans);
+                } else {
+                    console.error('❌ No plans in response');
+                }
             } else {
-                console.error('❌ Failed to fetch pricing:', response.statusText);
+                const errorText = await response.text();
+                console.error('❌ Failed to fetch pricing:', response.statusText, errorText);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('❌ Error fetching pricing:', error);
+            console.error('❌ Error details:', error.message);
+            setError(error.message);
         } finally {
             setLoading(false);
         }
     };
 
-    const handlePaymentSuccess = () => {
-        if (user) {
-            // User is logged in - redirect to create election
-            alert('Payment Successful! Redirecting to create your election...');
-            window.location.href = '/dashboard/create-election';
-        } else {
-            // User is guest - redirect to register
-            alert('Payment Successful! Please create an account to access your election credit.');
-            // Store payment success flag
-            localStorage.setItem('paymentSuccess', 'true');
-            localStorage.setItem('paidPlan', selectedPlan?.name || '');
-            window.location.href = '/register';
+    const handleSelectPlan = (plan: PricingPlan) => {
+        const votersText = plan.voterLimit === -1 ? 'Unlimited Voters' : `${plan.voterLimit} Voters`;
+        
+        // Check if user is logged in
+        if (!user) {
+            // Store selected plan and redirect to register
+            localStorage.setItem('selectedPlan', JSON.stringify({
+                planId: plan.planId,
+                name: plan.name,
+                price: plan.price,
+                voters: votersText
+            }));
+            router.push('/register?redirect=pricing');
+            return;
         }
+        
+        // User is logged in, allow plan selection
+        setSelectedPlan({ 
+            name: plan.name, 
+            price: plan.price, 
+            voters: votersText,
+            planId: plan.planId 
+        });
+    };
+
+    const handlePaymentSuccess = () => {
+        // User must be logged in to reach this point
+        alert('Payment Successful! Redirecting to create your election...');
+        window.location.href = '/dashboard/create-election';
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 font-sans">
+        <div className="min-h-screen bg-gray-50 font-sans overflow-x-hidden">
             {/* Navigation */}
             <nav className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 shadow-sm">
-                <div className="container-google">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
-                        <Link href="/" className="flex items-center space-x-2">
-                            <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center shadow-md">
-                                <i className="fas fa-vote-yea text-white text-xl"></i>
+                        <Link href="/" className="flex items-center space-x-2 flex-shrink-0">
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-600 rounded-lg flex items-center justify-center shadow-md">
+                                <i className="fas fa-vote-yea text-white text-base sm:text-xl"></i>
                             </div>
-                            <span className="text-xl font-bold text-gray-900 tracking-tight">
+                            <span className="text-lg sm:text-xl font-bold text-gray-900 tracking-tight">
                                 PollSync
                             </span>
                         </Link>
@@ -116,14 +164,19 @@ export default function PricingPage() {
 
                 {loading ? (
                     <div className="text-center py-12">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
                         <p className="mt-4 text-gray-600">Loading pricing plans...</p>
                     </div>
                 ) : plans.length === 0 ? (
                     <div className="text-center py-12 bg-white rounded-xl shadow-sm border">
                         <div className="text-red-500 text-4xl mb-4">⚠️</div>
                         <p className="text-xl font-semibold text-gray-900 mb-2">Unable to load pricing plans</p>
-                        <p className="text-gray-600 mb-4">Please check your connection and try again</p>
+                        <p className="text-gray-600 mb-4">
+                            {error ? `Error: ${error}` : 'Please check your connection and try again'}
+                        </p>
+                        <p className="text-sm text-gray-500 mb-4">
+                            API URL: {process.env.NEXT_PUBLIC_API_URL || 'Not configured'}
+                        </p>
                         <button 
                             onClick={fetchPricing}
                             className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
@@ -144,7 +197,7 @@ export default function PricingPage() {
                                             ? 'border-green-500 ring-2 ring-green-500 transform scale-105 z-10'
                                             : 'border-gray-100 hover:shadow-xl hover:-translate-y-1'
                                         }`}
-                                    onClick={() => setSelectedPlan({ name: plan.name, price: plan.price, voters: votersText })}
+                                    onClick={() => handleSelectPlan(plan)}
                                 >
                                     {isRecommended && (
                                         <div className="absolute top-0 right-0 -mt-2 -mr-2 w-20 h-20 overflow-hidden">
@@ -203,12 +256,16 @@ export default function PricingPage() {
                                         </ul>
                                         <div className="rounded-md shadow">
                                             <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleSelectPlan(plan);
+                                                }}
                                                 className={`flex items-center justify-center px-5 py-3 border text-base font-medium rounded-md w-full transition-colors ${selectedPlan?.name === plan.name
                                                         ? 'bg-green-600 text-white hover:bg-green-700 border-transparent'
                                                         : 'bg-white text-green-600 hover:bg-gray-50 border-green-200'
                                                     }`}
                                             >
-                                                {selectedPlan?.name === plan.name ? 'Selected' : 'Select Plan'}
+                                                {selectedPlan?.name === plan.name ? 'Selected' : user ? 'Select Plan' : 'Sign Up to Select'}
                                             </button>
                                         </div>
                                     </div>
@@ -218,16 +275,17 @@ export default function PricingPage() {
                     </div>
                 )}
 
-                {/* Payment Section */}
-                <div className={`mt-16 transition-all duration-500 ease-in-out ${selectedPlan ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}>
-                    <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
-                        <div className="px-6 py-8 sm:p-10">
-                            <h3 className="text-2xl font-bold text-gray-900 text-center mb-2">
-                                Complete Payment
-                            </h3>
-                            <p className="text-gray-500 text-center mb-8">
-                                You are paying <span className="font-bold text-gray-900">KES {selectedPlan?.price.toLocaleString()}</span> for the <span className="font-bold text-green-600">{selectedPlan?.name}</span> plan.
-                            </p>
+                {/* Payment Section - Only show for logged-in users */}
+                {user && selectedPlan && (
+                    <div className="mt-16 transition-all duration-500 ease-in-out opacity-100 translate-y-0">
+                        <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+                            <div className="px-6 py-8 sm:p-10">
+                                <h3 className="text-2xl font-bold text-gray-900 text-center mb-2">
+                                    Complete Payment
+                                </h3>
+                                <p className="text-gray-500 text-center mb-8">
+                                    You are paying <span className="font-bold text-gray-900">KES {selectedPlan?.price.toLocaleString()}</span> for the <span className="font-bold text-green-600">{selectedPlan?.name}</span> plan.
+                                </p>
 
                             <div className="space-y-6">
                                 <div>
@@ -263,9 +321,45 @@ export default function PricingPage() {
                                 <i className="fas fa-lock mr-2"></i>
                                 Secure payment via Kopokopo & M-PESA
                             </p>
+                            </div>
                         </div>
                     </div>
-                </div>
+                )}
+
+                {/* Sign Up Prompt for non-logged-in users */}
+                {!user && selectedPlan && (
+                    <div className="mt-16 max-w-2xl mx-auto">
+                        <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl shadow-xl border-2 border-green-200 overflow-hidden p-8 sm:p-12 text-center">
+                            <div className="mb-6">
+                                <i className="fas fa-user-plus text-5xl text-green-600"></i>
+                            </div>
+                            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                                Create an Account to Continue
+                            </h3>
+                            <p className="text-gray-600 mb-6">
+                                You've selected the <span className="font-bold text-green-600">{selectedPlan.name}</span> plan for <span className="font-bold">KES {selectedPlan.price.toLocaleString()}</span>.
+                                <br />
+                                Please create an account or log in to complete your purchase.
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                <Link 
+                                    href="/register?redirect=pricing"
+                                    className="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors inline-flex items-center justify-center"
+                                >
+                                    <i className="fas fa-user-plus mr-2"></i>
+                                    Create Account
+                                </Link>
+                                <Link 
+                                    href="/login?redirect=pricing"
+                                    className="bg-white text-green-600 border-2 border-green-600 px-8 py-3 rounded-lg font-semibold hover:bg-green-50 transition-colors inline-flex items-center justify-center"
+                                >
+                                    <i className="fas fa-sign-in-alt mr-2"></i>
+                                    Log In
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

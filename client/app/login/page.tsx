@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -13,6 +13,15 @@ export default function LoginPage() {
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [sessionExpired, setSessionExpired] = useState(false);
+
+    useEffect(() => {
+        // Check if redirected due to session expiration
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('session') === 'expired') {
+            setSessionExpired(true);
+        }
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -30,8 +39,21 @@ export default function LoginPage() {
             // Extract token and user data
             const { token, ...user } = userData;
 
-            // Call the context login function with token and user
-            login(token, user);
+            // Store auth data
+            localStorage.setItem('token', token);
+            localStorage.setItem('user', JSON.stringify(user));
+
+            // Check if user should be redirected to pricing
+            const params = new URLSearchParams(window.location.search);
+            const redirect = params.get('redirect');
+            
+            if (redirect === 'pricing') {
+                // Redirect to pricing page to complete purchase
+                router.push('/pricing');
+            } else {
+                // Normal login flow
+                login(token, user);
+            }
         } catch (err: any) {
             setError(err.response?.data?.message || 'Login failed');
         } finally {
@@ -56,6 +78,12 @@ export default function LoginPage() {
 
                 {/* Form */}
                 <div className="card-google p-6 md:p-8 shadow-xl">
+                    {sessionExpired && (
+                        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg text-sm">
+                            <i className="fas fa-clock mr-2"></i>
+                            Your session has expired. Please log in again.
+                        </div>
+                    )}
                     {error && (
                         <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
                             <i className="fas fa-exclamation-circle mr-2"></i>

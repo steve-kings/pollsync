@@ -87,8 +87,14 @@ export default function DashboardPage() {
                     totalVotes,
                     recentActivity: electionsData.slice(0, 5)
                 });
-            } catch (error) {
+            } catch (error: any) {
                 console.error('Failed to fetch data', error);
+                
+                // Handle 401 Unauthorized - token expired or invalid
+                if (error.response?.status === 401) {
+                    console.log('🔒 Authentication failed - redirecting to login');
+                    logout();
+                }
             } finally {
                 setIsLoading(false);
             }
