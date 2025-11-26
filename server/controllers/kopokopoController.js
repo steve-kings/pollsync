@@ -86,16 +86,25 @@ exports.initiateSTKPush = async (req, res) => {
     const isTestMode = !CLIENT_ID || !CLIENT_SECRET || CLIENT_ID === 'your_client_id_here';
 
     if (isTestMode) {
-        console.log('⚠️  TEST MODE: Kopokopo not configured, simulating payment');
+        try {
+            console.log('⚠️  TEST MODE: Kopokopo not configured, simulating payment');
 
-        const testTransactionId = `TEST_TXN_${Date.now()}`;
-        
-        // Create pending transaction
-        const Transaction = require('../models/Transaction');
-        const User = require('../models/User');
-        
-        const paymentAmount = parseFloat(amount);
-        const planDetails = await getPlanByAmount(paymentAmount);
+            const testTransactionId = `TEST_TXN_${Date.now()}`;
+            
+            // Create pending transaction
+            const Transaction = require('../models/Transaction');
+            const User = require('../models/User');
+            
+            const paymentAmount = parseFloat(amount);
+            const planDetails = await getPlanByAmount(paymentAmount);
+
+            if (!planDetails) {
+                console.error('❌ TEST: No plan found for amount:', paymentAmount);
+                return res.status(400).json({
+                    success: false,
+                    message: `No pricing plan found for amount KES ${paymentAmount}. Please select a valid plan.`
+                });
+            }
 
         // Create transaction record
         const transaction = new Transaction({
@@ -188,18 +197,25 @@ exports.initiateSTKPush = async (req, res) => {
             }
         }, 5000); // Simulate 5 second delay for payment
 
-        // Return immediately - don't wait for payment
-        return res.status(200).json({
-            success: true,
-            message: 'TEST MODE: STK Push sent. Complete payment on your phone.',
-            testMode: true,
-            data: {
-                transactionId: testTransactionId,
-                reference: testTransactionId,
-                status: 'Pending',
-                message: 'Check your phone for M-Pesa prompt'
-            }
-        });
+            // Return immediately - don't wait for payment
+            return res.status(200).json({
+                success: true,
+                message: 'TEST MODE: STK Push sent. Complete payment on your phone.',
+                testMode: true,
+                data: {
+                    transactionId: testTransactionId,
+                    reference: testTransactionId,
+                    status: 'Pending',
+                    message: 'Check your phone for M-Pesa prompt'
+                }
+            });
+        } catch (testError) {
+            console.error('❌ TEST MODE Error:', testError);
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to initiate test payment: ' + testError.message
+            });
+        }
     }
 
     try {
