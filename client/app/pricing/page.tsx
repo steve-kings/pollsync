@@ -111,14 +111,21 @@ export default function PricingPage() {
 
     const handlePaymentSuccess = () => {
         // User must be logged in to reach this point
-        alert('Payment Successful! Redirecting to create your election...');
-        window.location.href = '/dashboard/create-election';
+        console.log('✅ Payment successful, redirecting...');
+        
+        // Show success message
+        alert('Payment Successful! Your package has been added. Redirecting to create your election...');
+        
+        // Use router for navigation
+        setTimeout(() => {
+            router.push('/dashboard/create-election');
+        }, 1000);
     };
 
     return (
         <div className="min-h-screen bg-gray-50 font-sans overflow-x-hidden">
             {/* Navigation */}
-            <nav className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 shadow-sm">
+            <nav className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-40 shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
                         <Link href="/" className="flex items-center space-x-2 flex-shrink-0">
@@ -153,12 +160,12 @@ export default function PricingPage() {
 
             <div className="max-w-7xl mx-auto py-20 px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-16">
-                    <h2 className="text-base font-semibold text-green-600 tracking-wide uppercase">Pay Per Election</h2>
+                    <h2 className="text-base font-semibold text-green-600 tracking-wide uppercase">Pay with M-Pesa</h2>
                     <p className="mt-2 text-4xl font-extrabold text-gray-900 sm:text-5xl sm:tracking-tight lg:text-6xl">
-                        Simple, transparent pricing
+                        Simple, Affordable Pricing
                     </p>
                     <p className="max-w-xl mt-5 mx-auto text-xl text-gray-500">
-                        No subscriptions. Just pay for what you need when you create an election.
+                        No subscriptions. Pay only for what you need. Instant activation via M-Pesa. Packages start from just KES 5.
                     </p>
                 </div>
 

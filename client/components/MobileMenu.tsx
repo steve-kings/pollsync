@@ -10,11 +10,17 @@ export default function MobileMenu() {
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
+            document.body.style.position = 'fixed';
+            document.body.style.width = '100%';
         } else {
-            document.body.style.overflow = 'unset';
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
         }
         return () => {
-            document.body.style.overflow = 'unset';
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
         };
     }, [isOpen]);
 
@@ -22,11 +28,12 @@ export default function MobileMenu() {
 
     return (
         <>
-            {/* Hamburger Button */}
+            {/* Hamburger Button - Always visible */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="md:hidden p-2 text-gray-600 hover:text-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 rounded-lg"
                 aria-label="Toggle menu"
+                style={{ position: 'relative', zIndex: 10000 }}
             >
                 {isOpen ? (
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -39,32 +46,46 @@ export default function MobileMenu() {
                 )}
             </button>
 
-            {/* Mobile Menu Overlay */}
+            {/* Mobile Menu Overlay - Covers everything */}
             {isOpen && (
                 <div
-                    className="fixed inset-0 bg-black/50 z-40 md:hidden"
+                    className="fixed inset-0 bg-black/60 md:hidden"
                     onClick={closeMenu}
+                    style={{ 
+                        zIndex: 99998,
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0
+                    }}
                 />
             )}
 
-            {/* Mobile Menu Panel */}
+            {/* Mobile Menu Panel - Slides from right */}
             <div
-                className={`fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out md:hidden ${
+                className={`fixed top-0 right-0 bottom-0 w-80 max-w-[85vw] bg-white shadow-2xl transform transition-transform duration-300 ease-in-out md:hidden ${
                     isOpen ? 'translate-x-0' : 'translate-x-full'
                 }`}
+                style={{ 
+                    zIndex: 99999,
+                    position: 'fixed',
+                    height: '100vh',
+                    overflowY: 'auto'
+                }}
             >
                 <div className="flex flex-col h-full">
                     {/* Header */}
-                    <div className="flex items-center justify-between p-6 border-b border-gray-200">
+                    <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-white">
                         <Link href="/" onClick={closeMenu} className="flex items-center space-x-2">
-                            <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
+                            <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center shadow-md">
                                 <i className="fas fa-vote-yea text-white text-sm"></i>
                             </div>
                             <span className="text-xl font-bold text-gray-900">PollSync</span>
                         </Link>
                         <button
                             onClick={closeMenu}
-                            className="p-2 text-gray-400 hover:text-gray-600 rounded-lg"
+                            className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
                             aria-label="Close menu"
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

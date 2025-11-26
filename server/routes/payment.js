@@ -172,9 +172,10 @@ router.post('/manual-credit', protect, async (req, res) => {
         transaction.processed = true;
         await transaction.save();
 
-        console.log(`✅ Manual credit added: ${voteCreditsToAdd} vote credits for user ${user.username}`);
+        console.log(`✅ Manual credit added: Package for user ${user.username}`);
+        console.log(`   Plan: ${transaction.plan}`);
+        console.log(`   Voter Limit: ${transaction.voterLimit}`);
         console.log(`   Transaction: ${transaction.transactionId}`);
-        console.log(`   Total vote credits: ${user.voteCredits}`);
 
         // Emit Socket.io event for real-time dashboard update
         const io = req.app.get('io');
@@ -185,8 +186,6 @@ router.post('/manual-credit', protect, async (req, res) => {
                 transactionId: transaction.transactionId,
                 plan: transaction.plan,
                 voterLimit: transaction.voterLimit,
-                voteCredits: voteCreditsToAdd,
-                totalVoteCredits: user.voteCredits,
                 timestamp: Date.now()
             });
             console.log('✅ Socket.io event emitted to dashboard');
@@ -194,12 +193,10 @@ router.post('/manual-credit', protect, async (req, res) => {
 
         res.json({
             success: true,
-            message: 'Payment confirmed! Credits added to your account.',
+            message: 'Payment confirmed! Package added to your account.',
             credit: {
                 plan: transaction.plan,
                 voterLimit: transaction.voterLimit,
-                voteCredits: voteCreditsToAdd,
-                totalVoteCredits: user.voteCredits,
                 transactionId: transaction.transactionId
             }
         });
@@ -369,17 +366,15 @@ router.post('/verify-transaction', protect, async (req, res) => {
                                 paymentDate: transaction.createdAt
                             });
 
-                            // Add vote credits
-                            const voteCreditsToAdd = transaction.voterLimit === -1 ? 999999 : transaction.voterLimit;
-                            user.addVoteCredits(voteCreditsToAdd);
-
                             await user.save();
 
                             // Mark as processed
                             transaction.processed = true;
                             await transaction.save();
 
-                            console.log(`✅ Verified and credited: ${voteCreditsToAdd} vote credits`);
+                            console.log(`✅ Verified and credited: Package added`);
+                            console.log(`   Plan: ${transaction.plan}`);
+                            console.log(`   Voter Limit: ${transaction.voterLimit}`);
 
                             // Emit Socket.io event
                             const io = req.app.get('io');
@@ -390,19 +385,18 @@ router.post('/verify-transaction', protect, async (req, res) => {
                                     transactionId: transaction.transactionId,
                                     plan: transaction.plan,
                                     voterLimit: transaction.voterLimit,
-                                    voteCredits: voteCreditsToAdd,
-                                    totalVoteCredits: user.voteCredits,
                                     timestamp: Date.now()
                                 });
                             }
 
                             return res.json({
                                 success: true,
-                                message: `✅ Payment verified! ${voteCreditsToAdd} vote credits added to your account.`,
+                                message: `✅ Payment verified! Package added to your account.`,
                                 transaction: {
                                     status: 'Success',
                                     processed: true,
-                                    voteCredits: voteCreditsToAdd
+                                    plan: transaction.plan,
+                                    voterLimit: transaction.voterLimit
                                 }
                             });
                         } else {

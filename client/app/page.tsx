@@ -30,7 +30,7 @@ export default function HomePage() {
     return (
         <div className="min-h-screen bg-white font-sans overflow-x-hidden">
             {/* Navigation */}
-            <nav className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 shadow-sm">
+            <nav className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-40 shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
                         <Link href="/" className="flex items-center space-x-2 flex-shrink-0">
@@ -74,20 +74,14 @@ export default function HomePage() {
                 <div className="max-w-7xl mx-auto">
                     <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
                         <div className="fade-in">
-                            <div className="inline-block mb-4 sm:mb-6">
-                                <span className="inline-flex items-center px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium bg-blue-50 text-blue-700">
-                                    <i className="fas fa-star mr-2 text-yellow-500"></i>
-                                    The #1 Election Platform
-                                </span>
-                            </div>
                             <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight tracking-tight">
-                                Make Every <br />
+                                Digital Elections <br />
                                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-green-400">
-                                    Vote Count
+                                    Made Simple
                                 </span>
                             </h1>
                             <p className="text-base sm:text-lg md:text-xl text-gray-600 mb-6 sm:mb-8 leading-relaxed">
-                                The simplest way to run secure, transparent elections for your organization. From student councils to community polls.
+                                Run secure, transparent elections with M-Pesa integration. Perfect for universities, student councils, clubs, organizations, and communities.
                             </p>
                             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                                 <Link href="/pricing" className="btn-primary text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all text-center">
@@ -151,26 +145,26 @@ export default function HomePage() {
                         {[
                             {
                                 step: '01',
-                                title: 'Create Election',
-                                desc: 'Set up your election details in 3 clicks.',
-                                icon: 'fa-edit'
+                                title: 'Purchase Package',
+                                desc: 'Pay via M-Pesa for your voter capacity. Packages start from KES 5.',
+                                icon: 'fa-credit-card'
                             },
                             {
                                 step: '02',
-                                title: 'Add Candidates',
-                                desc: 'Add profiles, photos, and manifestos.',
-                                icon: 'fa-users'
+                                title: 'Create Election',
+                                desc: 'Set up election details, add candidates with photos and manifestos.',
+                                icon: 'fa-edit'
                             },
                             {
                                 step: '03',
-                                title: 'Share Link',
-                                desc: 'Send secure voting links to your voters.',
+                                title: 'Share & Vote',
+                                desc: 'Send secure links to voters. They vote from any device, anywhere.',
                                 icon: 'fa-share-alt'
                             },
                             {
                                 step: '04',
-                                title: 'Live Results',
-                                desc: 'Watch the votes come in real-time.',
+                                title: 'Real-Time Results',
+                                desc: 'Watch votes come in live. Instant results when polls close.',
                                 icon: 'fa-chart-pie'
                             }
                         ].map((item, index) => (
@@ -206,31 +200,31 @@ export default function HomePage() {
                         </div>
                         <div className="order-1 md:order-2 fade-in">
                             <h2 className="text-4xl font-bold text-gray-900 mb-6">
-                                Everything you need for <br />
-                                <span className="text-green-600">Flawless Elections</span>
+                                Everything You Need, <br />
+                                <span className="text-green-600">Powered by M-Pesa</span>
                             </h2>
 
                             <div className="space-y-8">
                                 {[
                                     {
-                                        title: 'Simplicity First',
-                                        desc: 'Setup in 10 minutes. Intuitive design that requires no training.',
-                                        icon: 'fa-magic'
+                                        title: 'M-Pesa Integration',
+                                        desc: 'Pay securely with M-Pesa. Instant package activation. No credit cards needed.',
+                                        icon: 'fa-mobile-alt'
+                                    },
+                                    {
+                                        title: 'Package-Based Pricing',
+                                        desc: 'Pay only for what you need. From KES 5 for 10 voters to unlimited packages.',
+                                        icon: 'fa-box'
                                     },
                                     {
                                         title: 'Secure & Transparent',
-                                        desc: 'Unique voter IDs, one vote per person, and encrypted data.',
+                                        desc: 'Unique voter IDs, one vote per person, encrypted data, and real-time monitoring.',
                                         icon: 'fa-shield-alt'
                                     },
                                     {
-                                        title: 'Real-Time Analytics',
-                                        desc: 'Visualize results instantly with beautiful charts and graphs.',
-                                        icon: 'fa-chart-bar'
-                                    },
-                                    {
-                                        title: 'Accessible Everywhere',
-                                        desc: 'Works on any device - phone, tablet, or computer.',
-                                        icon: 'fa-mobile-alt'
+                                        title: 'Works Everywhere',
+                                        desc: 'Mobile-first design. Works on any phone, tablet, or computer with internet.',
+                                        icon: 'fa-globe'
                                     }
                                 ].map((feature, i) => (
                                     <div key={i} className="flex gap-4">
@@ -262,7 +256,7 @@ export default function HomePage() {
                             <i className="fas fa-quote-left"></i>
                         </div>
                         <h2 className="text-3xl md:text-5xl font-bold mb-8 leading-tight">
-                            "PollSync increased our voter turnout from 45% to 92%. Students loved how easy it was to vote from their phones!"
+                            "PollSync made our university elections incredibly easy! M-Pesa payment was instant, and students could vote from their phones. Turnout increased from 45% to 92%!"
                         </h2>
                         <div className="flex items-center justify-center gap-4">
                             <div className="w-16 h-16 rounded-full border-2 border-green-400 overflow-hidden">
@@ -270,12 +264,12 @@ export default function HomePage() {
                                     src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80"
                                     width={64}
                                     height={64}
-                                    alt="Sarah"
+                                    alt="Student Leader"
                                 />
                             </div>
                             <div className="text-left">
-                                <div className="font-bold text-xl">Sarah Johnson</div>
-                                <div className="text-green-300">CS Club President</div>
+                                <div className="font-bold text-xl">Sarah M.</div>
+                                <div className="text-green-300">Student Council President</div>
                             </div>
                         </div>
                     </div>
@@ -290,10 +284,10 @@ export default function HomePage() {
                         <div className="absolute bottom-0 left-0 w-64 h-64 bg-orange-500 opacity-20 rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2"></div>
 
                         <h2 className="text-4xl md:text-6xl font-bold mb-6 relative z-10">
-                            Ready to Start Your Story?
+                            Ready to Run Your Election?
                         </h2>
                         <p className="text-xl text-green-50 mb-10 max-w-2xl mx-auto relative z-10">
-                            Join thousands of organizations making democratic decisions with PollSync.
+                            Join hundreds of universities, student councils, and organizations running secure, transparent elections. Start from just KES 5.
                         </p>
                         <div className="relative z-10">
                             <Link href="/pricing" className="bg-white text-green-600 hover:bg-gray-50 px-10 py-5 rounded-full font-bold text-xl transition-all shadow-lg hover:shadow-xl hover:scale-105 inline-flex items-center gap-2">
@@ -368,11 +362,12 @@ export default function HomePage() {
 
                     <div className="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center">
                         <p className="text-gray-500 text-sm mb-4 md:mb-0">
-                            &copy; 2025 PollSync. Developed by kingscreation.co.ke 2025
+                            &copy; 2025 PollSync. Powered by M-Pesa
                         </p>
                         <div className="flex space-x-8 text-sm text-gray-500">
                             <Link href="#" className="hover:text-green-600">Privacy Policy</Link>
                             <Link href="#" className="hover:text-green-600">Terms of Service</Link>
+                            <Link href="#" className="hover:text-green-600">Contact Support</Link>
                         </div>
                     </div>
                 </div>

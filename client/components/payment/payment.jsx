@@ -47,7 +47,8 @@ export default function PaymentButton({ amount, phoneNumber, onSuccess }) {
             newSocket.on('payment_success', (data) => {
                 console.log('✅ Payment success event received:', data);
                 setStatus('success');
-                alert(`✅ Payment successful! You received ${data.voterLimit === -1 ? 'unlimited' : data.voterLimit} voter credits.`);
+                
+                // Call onSuccess callback immediately
                 if (onSuccess) {
                     console.log('Calling onSuccess callback');
                     onSuccess();
@@ -126,8 +127,12 @@ export default function PaymentButton({ amount, phoneNumber, onSuccess }) {
                             console.log('✅ Payment successful via polling!');
                             clearInterval(pollInterval);
                             setStatus('success');
-                            alert(`✅ Payment successful! You received ${statusRes.data.transaction.voterLimit === -1 ? 'unlimited' : statusRes.data.transaction.voterLimit} voter credits.`);
-                            if (onSuccess) onSuccess();
+                            
+                            // Call onSuccess callback immediately
+                            if (onSuccess) {
+                                console.log('Calling onSuccess callback from polling');
+                                onSuccess();
+                            }
                         } else if (statusRes.data.status === 'failed' || statusRes.data.status === 'cancelled') {
                             console.log('❌ Payment failed/cancelled via polling');
                             clearInterval(pollInterval);
@@ -186,8 +191,12 @@ export default function PaymentButton({ amount, phoneNumber, onSuccess }) {
             if (response.data.success) {
                 setStatus('success');
                 setShowManualComplete(false);
-                alert(`✅ Payment confirmed! You received ${response.data.credit.voterLimit === -1 ? 'unlimited' : response.data.credit.voterLimit} voter credits.`);
-                if (onSuccess) onSuccess();
+                
+                // Call onSuccess callback immediately
+                if (onSuccess) {
+                    console.log('Calling onSuccess callback from manual complete');
+                    onSuccess();
+                }
             } else {
                 alert('❌ ' + response.data.message);
             }
