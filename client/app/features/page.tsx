@@ -28,16 +28,16 @@ export default function FeaturesPage() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-white overflow-x-hidden">
             {/* Navigation */}
             <nav className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 shadow-sm">
-                <div className="container-google">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
-                        <Link href="/" className="flex items-center space-x-2">
-                            <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
-                                <i className="fas fa-vote-yea text-white text-xl"></i>
+                        <Link href="/" className="flex items-center space-x-2 flex-shrink-0">
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-600 rounded-lg flex items-center justify-center">
+                                <i className="fas fa-vote-yea text-white text-base sm:text-xl"></i>
                             </div>
-                            <span className="text-xl font-bold text-gray-900">
+                            <span className="text-lg sm:text-xl font-bold text-gray-900">
                                 PollSync
                             </span>
                         </Link>

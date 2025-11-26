@@ -28,16 +28,16 @@ export default function HomePage() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-white font-sans">
+        <div className="min-h-screen bg-white font-sans overflow-x-hidden">
             {/* Navigation */}
             <nav className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 shadow-sm">
-                <div className="container-google">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
-                        <Link href="/" className="flex items-center space-x-2">
-                            <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center shadow-md">
-                                <i className="fas fa-vote-yea text-white text-xl"></i>
+                        <Link href="/" className="flex items-center space-x-2 flex-shrink-0">
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-600 rounded-lg flex items-center justify-center shadow-md">
+                                <i className="fas fa-vote-yea text-white text-base sm:text-xl"></i>
                             </div>
-                            <span className="text-xl font-bold text-gray-900 tracking-tight">
+                            <span className="text-lg sm:text-xl font-bold text-gray-900 tracking-tight">
                                 PollSync
                             </span>
                         </Link>
@@ -64,44 +64,44 @@ export default function HomePage() {
             </nav>
 
             {/* Hero Section */}
-            <section className="section relative overflow-hidden pt-20 pb-32">
+            <section className="relative overflow-hidden pt-12 sm:pt-20 pb-16 sm:pb-32 px-4 sm:px-6 lg:px-8">
                 {/* Background decoration */}
-                <div className="absolute inset-0 -z-10">
-                    <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-green-50 rounded-full blur-3xl opacity-50 translate-x-1/3 -translate-y-1/4"></div>
-                    <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-orange-50 rounded-full blur-3xl opacity-50 -translate-x-1/3 translate-y-1/4"></div>
+                <div className="absolute inset-0 -z-10 overflow-hidden">
+                    <div className="absolute top-0 right-0 w-[400px] sm:w-[800px] h-[400px] sm:h-[800px] bg-green-50 rounded-full blur-3xl opacity-50 translate-x-1/3 -translate-y-1/4"></div>
+                    <div className="absolute bottom-0 left-0 w-[300px] sm:w-[600px] h-[300px] sm:h-[600px] bg-orange-50 rounded-full blur-3xl opacity-50 -translate-x-1/3 translate-y-1/4"></div>
                 </div>
 
-                <div className="container-google">
-                    <div className="grid md:grid-cols-2 gap-16 items-center">
+                <div className="max-w-7xl mx-auto">
+                    <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
                         <div className="fade-in">
-                            <div className="inline-block mb-6">
-                                <span className="badge badge-info px-4 py-1.5 text-sm">
+                            <div className="inline-block mb-4 sm:mb-6">
+                                <span className="inline-flex items-center px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium bg-blue-50 text-blue-700">
                                     <i className="fas fa-star mr-2 text-yellow-500"></i>
                                     The #1 Election Platform
                                 </span>
                             </div>
-                            <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight tracking-tight">
+                            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight tracking-tight">
                                 Make Every <br />
                                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-green-400">
                                     Vote Count
                                 </span>
                             </h1>
-                            <p className="text-xl text-gray-600 mb-8 leading-relaxed max-w-lg">
+                            <p className="text-base sm:text-lg md:text-xl text-gray-600 mb-6 sm:mb-8 leading-relaxed">
                                 The simplest way to run secure, transparent elections for your organization. From student councils to community polls.
                             </p>
-                            <div className="flex flex-wrap gap-4">
-                                <Link href="/pricing" className="btn-primary text-lg px-8 py-4 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all">
+                            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                                <Link href="/pricing" className="btn-primary text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all text-center">
                                     Get Started Free
                                 </Link>
-                                <Link href="/how-it-works" className="bg-white border-2 border-gray-200 text-gray-700 hover:border-green-600 hover:text-green-600 px-8 py-4 rounded-lg font-semibold text-lg transition-all inline-flex items-center gap-2">
+                                <Link href="/how-it-works" className="bg-white border-2 border-gray-200 text-gray-700 hover:border-green-600 hover:text-green-600 px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg transition-all inline-flex items-center justify-center gap-2">
                                     <i className="fas fa-play-circle"></i>
                                     See How It Works
                                 </Link>
                             </div>
-                            <div className="mt-8 flex items-center gap-4 text-sm text-gray-500">
+                            <div className="mt-6 sm:mt-8 flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-gray-500">
                                 <div className="flex -space-x-2">
                                     {[1, 2, 3, 4].map(i => (
-                                        <div key={i} className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center overflow-hidden">
+                                        <div key={i} className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center overflow-hidden">
                                             <Image src={`https://i.pravatar.cc/100?img=${i + 10}`} width={32} height={32} alt="User" />
                                         </div>
                                     ))}
@@ -109,7 +109,7 @@ export default function HomePage() {
                                 <p>Trusted by 100+ organizations</p>
                             </div>
                         </div>
-                        <div className="relative h-[600px] rounded-2xl overflow-hidden shadow-2xl scale-in border-8 border-white/50 backdrop-blur-sm">
+                        <div className="relative h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] rounded-2xl overflow-hidden shadow-2xl scale-in border-4 sm:border-8 border-white/50 backdrop-blur-sm">
                             <Image
                                 src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80"
                                 alt="PollSync Dashboard Interface"
@@ -135,8 +135,8 @@ export default function HomePage() {
             </section>
 
             {/* How It Works Section */}
-            <section className="section bg-gray-50" id="how-it-works">
-                <div className="container-google">
+            <section className="py-16 sm:py-20 md:py-24 bg-gray-50" id="how-it-works">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-16 fade-in">
                         <span className="text-green-600 font-semibold tracking-wider uppercase text-sm">Simple Workflow</span>
                         <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mt-2 mb-4">
@@ -147,7 +147,7 @@ export default function HomePage() {
                         </p>
                     </div>
 
-                    <div className="grid md:grid-cols-4 gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
                         {[
                             {
                                 step: '01',
@@ -192,10 +192,10 @@ export default function HomePage() {
             </section>
 
             {/* Features Grid */}
-            <section className="section" id="features">
-                <div className="container-google">
-                    <div className="grid md:grid-cols-2 gap-16 items-center">
-                        <div className="order-2 md:order-1 relative h-[600px] slide-in-left">
+            <section className="py-16 sm:py-20 md:py-24" id="features">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid md:grid-cols-2 gap-8 sm:gap-12 md:gap-16 items-center">
+                        <div className="order-2 md:order-1 relative h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] slide-in-left">
                             <div className="absolute inset-0 bg-gradient-to-tr from-green-100 to-orange-100 rounded-3xl transform -rotate-3"></div>
                             <Image
                                 src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80"
@@ -250,13 +250,13 @@ export default function HomePage() {
             </section>
 
             {/* Testimonials */}
-            <section className="section bg-green-900 text-white overflow-hidden relative">
+            <section className="py-16 sm:py-20 md:py-24 bg-green-900 text-white overflow-hidden relative">
                 <div className="absolute top-0 left-0 w-full h-full opacity-10">
                     <div className="absolute right-0 top-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
                     <div className="absolute left-0 bottom-0 w-96 h-96 bg-orange-500 rounded-full blur-3xl"></div>
                 </div>
 
-                <div className="container-google relative z-10">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                     <div className="text-center max-w-4xl mx-auto fade-in">
                         <div className="text-6xl text-green-400 mb-8 opacity-50">
                             <i className="fas fa-quote-left"></i>
@@ -283,9 +283,9 @@ export default function HomePage() {
             </section>
 
             {/* CTA */}
-            <section className="section bg-white">
-                <div className="container-google">
-                    <div className="bg-gradient-to-r from-green-600 to-green-500 rounded-3xl p-12 md:p-20 text-center text-white shadow-2xl relative overflow-hidden scale-in">
+            <section className="py-16 sm:py-20 md:py-24 bg-white">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="bg-gradient-to-r from-green-600 to-green-500 rounded-2xl sm:rounded-3xl p-8 sm:p-12 md:p-20 text-center text-white shadow-2xl relative overflow-hidden scale-in">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
                         <div className="absolute bottom-0 left-0 w-64 h-64 bg-orange-500 opacity-20 rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2"></div>
 
@@ -309,9 +309,9 @@ export default function HomePage() {
             </section>
 
             {/* Footer */}
-            <footer className="bg-gray-50 pt-20 pb-10 border-t border-gray-200">
-                <div className="container-google">
-                    <div className="grid md:grid-cols-4 gap-12 mb-16">
+            <footer className="bg-gray-50 pt-12 sm:pt-20 pb-10 border-t border-gray-200">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 sm:gap-12 mb-12 sm:mb-16">
                         <div className="col-span-1 md:col-span-1">
                             <Link href="/" className="flex items-center space-x-2 mb-6">
                                 <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
