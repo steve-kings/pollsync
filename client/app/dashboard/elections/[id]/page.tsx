@@ -269,13 +269,13 @@ function ElectionDetailsContent({ id }: { id: string }) {
             <div className="bg-white border-b sticky top-0 z-30">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
-                        <div className="flex items-center space-x-4">
-                            <Link href="/dashboard" className="text-gray-600 hover:text-green-600">
+                        <div className="flex items-center space-x-2 sm:space-x-4 flex-1 min-w-0">
+                            <Link href="/dashboard" className="text-gray-600 hover:text-green-600 p-2 flex-shrink-0">
                                 <i className="fas fa-arrow-left"></i>
                             </Link>
-                            <div>
-                                <h1 className="text-lg font-bold text-gray-900">{election.title}</h1>
-                                <p className="text-xs text-gray-500">{election.organization}</p>
+                            <div className="min-w-0 flex-1">
+                                <h1 className="text-sm sm:text-lg font-bold text-gray-900 truncate">{election.title}</h1>
+                                <p className="text-xs text-gray-500 truncate">{election.organization}</p>
                             </div>
                             {/* Package/Credits Badge */}
                             <div className="hidden md:flex items-center space-x-2 px-3 py-1.5 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg">
@@ -311,8 +311,8 @@ function ElectionDetailsContent({ id }: { id: string }) {
                                 </button>
                             </div>
                         </div>
-                        <div className="flex items-center space-x-3">
-                            <div className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-3 flex-shrink-0">
+                            <div className="hidden sm:flex items-center space-x-2">
                                 <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-gray-300'}`}></div>
                                 <span className="text-xs text-gray-500 hidden md:block">
                                     {isConnected ? 'Live' : 'Offline'}
@@ -321,7 +321,7 @@ function ElectionDetailsContent({ id }: { id: string }) {
                             
                             <button
                                 onClick={() => window.location.reload()}
-                                className="text-gray-600 hover:text-green-600"
+                                className="text-gray-600 hover:text-green-600 p-2 hidden sm:block"
                                 title="Refresh"
                             >
                                 <i className="fas fa-sync-alt"></i>
@@ -329,20 +329,20 @@ function ElectionDetailsContent({ id }: { id: string }) {
                             
                             <button
                                 onClick={() => handleTabChange('analytics')}
-                                className="btn-secondary text-sm py-2"
+                                className="btn-secondary text-xs sm:text-sm py-1.5 sm:py-2 px-2 sm:px-4 hidden md:flex"
                             >
-                                <i className="fas fa-chart-line mr-2"></i>
-                                <span className="hidden md:inline">Analytics</span>
+                                <i className="fas fa-chart-line sm:mr-2"></i>
+                                <span className="hidden lg:inline">Analytics</span>
                             </button>
                             
-                            <Link href={`/dashboard/elections/${id}/edit`} className="btn-secondary text-sm py-2">
-                                <i className="fas fa-edit mr-2"></i>
-                                <span className="hidden md:inline">Edit</span>
+                            <Link href={`/dashboard/elections/${id}/edit`} className="btn-secondary text-xs sm:text-sm py-1.5 sm:py-2 px-2 sm:px-4 hidden sm:flex">
+                                <i className="fas fa-edit sm:mr-2"></i>
+                                <span className="hidden lg:inline">Edit</span>
                             </Link>
                             
-                            <button onClick={copyToClipboard} className="btn-primary text-sm py-2">
-                                <i className="fas fa-share-alt mr-2"></i>
-                                <span className="hidden md:inline">Share</span>
+                            <button onClick={copyToClipboard} className="btn-primary text-xs sm:text-sm py-1.5 sm:py-2 px-2 sm:px-4">
+                                <i className="fas fa-share-alt sm:mr-2"></i>
+                                <span className="hidden sm:inline">Share</span>
                             </button>
                         </div>
                     </div>
@@ -351,14 +351,14 @@ function ElectionDetailsContent({ id }: { id: string }) {
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Status Banner */}
-                <div className={`mb-8 p-6 rounded-xl border-2 ${
+                <div className={`mb-6 sm:mb-8 p-4 sm:p-6 rounded-xl border-2 ${
                     status === 'active' ? 'bg-green-50 border-green-200' :
                     status === 'completed' ? 'bg-blue-50 border-blue-200' :
                     'bg-yellow-50 border-yellow-200'
                 }`}>
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                            <div className={`w-16 h-16 rounded-full flex items-center justify-center ${
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div className="flex items-center space-x-3 sm:space-x-4">
+                            <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center flex-shrink-0 ${
                                 status === 'active' ? 'bg-green-100 text-green-600' :
                                 status === 'completed' ? 'bg-blue-100 text-blue-600' :
                                 'bg-yellow-100 text-yellow-600'
@@ -367,54 +367,54 @@ function ElectionDetailsContent({ id }: { id: string }) {
                                     status === 'active' ? 'fa-play-circle' :
                                     status === 'completed' ? 'fa-check-circle' :
                                     'fa-clock'
-                                } text-2xl`}></i>
+                                } text-xl sm:text-2xl`}></i>
                             </div>
                             <div>
-                                <h2 className="text-2xl font-bold text-gray-900 capitalize">{status}</h2>
-                                <p className="text-gray-600">{timeRemaining}</p>
+                                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 capitalize">{status}</h2>
+                                <p className="text-sm sm:text-base text-gray-600">{timeRemaining}</p>
                             </div>
                         </div>
-                        <div className="text-right">
-                            <div className="text-4xl font-bold text-gray-900">{totalVotes}</div>
-                            <p className="text-sm text-gray-600">Total Votes Cast</p>
+                        <div className="text-left sm:text-right">
+                            <div className="text-3xl sm:text-4xl font-bold text-gray-900">{totalVotes}</div>
+                            <p className="text-xs sm:text-sm text-gray-600">Total Votes Cast</p>
                         </div>
                     </div>
                 </div>
 
                 {/* Tabs */}
-                <div className="mb-6 border-b border-gray-200">
-                    <nav className="-mb-px flex space-x-8">
+                <div className="mb-6 border-b border-gray-200 overflow-x-auto">
+                    <nav className="-mb-px flex space-x-4 sm:space-x-8 min-w-max sm:min-w-0">
                         <button
                             onClick={() => handleTabChange('overview')}
-                            className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                            className={`py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap ${
                                 activeTab === 'overview'
                                     ? 'border-green-600 text-green-600'
                                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                             }`}
                         >
-                            <i className="fas fa-chart-bar mr-2"></i>
+                            <i className="fas fa-chart-bar mr-1 sm:mr-2"></i>
                             Overview
                         </button>
                         <button
                             onClick={() => handleTabChange('analytics')}
-                            className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                            className={`py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap ${
                                 activeTab === 'analytics'
                                     ? 'border-green-600 text-green-600'
                                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                             }`}
                         >
-                            <i className="fas fa-chart-line mr-2"></i>
+                            <i className="fas fa-chart-line mr-1 sm:mr-2"></i>
                             Analytics
                         </button>
                         <button
                             onClick={() => handleTabChange('voters')}
-                            className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                            className={`py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap ${
                                 activeTab === 'voters'
                                     ? 'border-green-600 text-green-600'
                                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                             }`}
                         >
-                            <i className="fas fa-users mr-2"></i>
+                            <i className="fas fa-users mr-1 sm:mr-2"></i>
                             Voters
                         </button>
                     </nav>
@@ -424,13 +424,13 @@ function ElectionDetailsContent({ id }: { id: string }) {
                 {activeTab === 'overview' && (
                     <div className="space-y-6">
                         {/* Contact Information Card */}
-                        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl shadow-sm border border-blue-200 p-6">
-                            <div className="flex items-center justify-between mb-4">
+                        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl shadow-sm border border-blue-200 p-4 sm:p-6">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4">
                                 <div className="flex items-center space-x-3">
-                                    <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                                    <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
                                         <i className="fas fa-phone-alt text-white"></i>
                                     </div>
-                                    <h3 className="text-lg font-bold text-gray-900">Inquiry Contact Information</h3>
+                                    <h3 className="text-base sm:text-lg font-bold text-gray-900">Inquiry Contact Information</h3>
                                 </div>
                                 <button
                                     onClick={() => {
@@ -441,7 +441,7 @@ function ElectionDetailsContent({ id }: { id: string }) {
                                         });
                                         setShowContactForm(true);
                                     }}
-                                    className="btn-secondary text-sm py-2"
+                                    className="btn-secondary text-xs sm:text-sm py-2 w-full sm:w-auto"
                                 >
                                     <i className="fas fa-edit mr-2"></i>
                                     Edit Contact Info
