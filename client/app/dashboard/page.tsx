@@ -16,6 +16,12 @@ interface Election {
     status: string;
     candidates: any[];
     voters: any[];
+    planType?: string;
+    packages?: any[];
+    packageUsed?: string;
+    voterLimit?: number;
+    totalCredits?: number;
+    creditsUsed?: number;
 }
 
 interface CreditStatus {

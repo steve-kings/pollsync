@@ -1,8 +1,11 @@
 module.exports = {
-    reactStrictMode: false, // Temporarily disable strict mode to avoid hydration warnings
+    reactStrictMode: false,
     compiler: {
         removeConsole: process.env.NODE_ENV === "production",
     },
+    // Optimize for deployment
+    poweredByHeader: false,
+    compress: true,
     images: {
         remotePatterns: [
             {
