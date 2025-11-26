@@ -1,6 +1,19 @@
 # PollSync - Digital Election Management System
 
+## 🎓 PLP MERN Stack Final Project Assignment
+
 A comprehensive, secure, and modern digital election management platform built with Next.js, Node.js, and MongoDB.
+
+**Submitted by:** Steve Kings  
+**Course:** PLP MERN Stack Development  
+**Assignment:** Final Project
+
+## 🌐 Live Deployment
+
+- **Frontend (Vercel):** [https://pollsync.vercel.app](https://pollsync.vercel.app)
+- **Backend (Render):** [https://pollsync-api.onrender.com](https://pollsync-api.onrender.com)
+
+> **Note:** The backend may take 30-60 seconds to wake up on first request (Render free tier limitation)
 
 ## 🚀 Features
 
@@ -255,11 +268,14 @@ This project is licensed under the MIT License.
 
 ## 👨‍💻 Developer
 
-Developed by **Kings Creation** - [kingscreation.co.ke](https://kingscreation.co.ke)
+**Steve Kings**  
+- GitHub: [@steve-kings](https://github.com/steve-kings)
+- Website: [kingscreation.co.ke](https://kingscreation.co.ke)
+- Email: steve@kingscreation.co.ke
 
 ## 📧 Support
 
-For support, email support@pollsync.com or visit our website.
+For support or inquiries about this project, please open an issue on GitHub or contact via email.
 
 ## 🎯 Roadmap
 
