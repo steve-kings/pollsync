@@ -705,61 +705,63 @@ function ElectionDetailsContent({ id }: { id: string }) {
                 {/* Voters Tab */}
                 {activeTab === 'voters' && (
                     <div className="bg-white rounded-xl shadow-sm border">
-                        <div className="p-6 border-b flex justify-between items-center">
-                            <div>
-                                <h3 className="text-xl font-bold text-gray-900">Allowed Voters</h3>
-                                <p className="text-sm text-gray-500 mt-1">Manage who can vote in this election</p>
-                            </div>
-                            <div className="flex gap-2">
-                                <button 
-                                    onClick={() => {
-                                        const csvContent = 'StudentID,Name,Email\nS001,John Doe,john@example.com\nS002,Jane Smith,jane@example.com';
-                                        const blob = new Blob([csvContent], { type: 'text/csv' });
-                                        const url = window.URL.createObjectURL(blob);
-                                        const a = document.createElement('a');
-                                        a.href = url;
-                                        a.download = 'voter-template.csv';
-                                        a.click();
-                                    }}
-                                    className="btn-secondary text-sm py-2"
-                                >
-                                    <i className="fas fa-download mr-2"></i>
-                                    Download Template
-                                </button>
-                                <button 
-                                    onClick={() => setShowAddVoter(!showAddVoter)} 
-                                    className="btn-secondary text-sm py-2"
-                                >
-                                    <i className="fas fa-user-plus mr-2"></i>
-                                    Add Manually
-                                </button>
-                                <label className="btn-primary text-sm py-2 cursor-pointer">
-                                    <i className="fas fa-upload mr-2"></i>
-                                    Import CSV
-                                    <input
-                                        type="file"
-                                        accept=".csv"
-                                        className="hidden"
-                                        onChange={async (e) => {
-                                            const file = e.target.files?.[0];
-                                            if (!file) return;
-
-                                            const formData = new FormData();
-                                            formData.append('file', file);
-
-                                            try {
-                                                const res = await api.post(`/elections/${id}/voters/import`, formData, {
-                                                    headers: { 'Content-Type': 'multipart/form-data' }
-                                                });
-                                                alert(res.data.message);
-                                                const votersRes = await api.get(`/elections/${id}/voters`);
-                                                setAllowedVoters(votersRes.data);
-                                            } catch (error: any) {
-                                                alert(error.response?.data?.message || 'Failed to upload voters');
-                                            }
+                        <div className="p-4 sm:p-6 border-b">
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                <div className="flex-1 min-w-0">
+                                    <h3 className="text-lg sm:text-xl font-bold text-gray-900">Allowed Voters</h3>
+                                    <p className="text-xs sm:text-sm text-gray-500 mt-1">Manage who can vote in this election</p>
+                                </div>
+                                <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+                                    <button 
+                                        onClick={() => {
+                                            const csvContent = 'StudentID,Name,Email\nS001,John Doe,john@example.com\nS002,Jane Smith,jane@example.com';
+                                            const blob = new Blob([csvContent], { type: 'text/csv' });
+                                            const url = window.URL.createObjectURL(blob);
+                                            const a = document.createElement('a');
+                                            a.href = url;
+                                            a.download = 'voter-template.csv';
+                                            a.click();
                                         }}
-                                    />
-                                </label>
+                                        className="btn-secondary text-xs sm:text-sm py-2 px-3 sm:px-4 flex-1 sm:flex-none"
+                                    >
+                                        <i className="fas fa-download mr-1 sm:mr-2"></i>
+                                        <span className="hidden xs:inline">Download </span>Template
+                                    </button>
+                                    <button 
+                                        onClick={() => setShowAddVoter(!showAddVoter)} 
+                                        className="btn-secondary text-xs sm:text-sm py-2 px-3 sm:px-4 flex-1 sm:flex-none"
+                                    >
+                                        <i className="fas fa-user-plus mr-1 sm:mr-2"></i>
+                                        Add Manually
+                                    </button>
+                                    <label className="btn-primary text-xs sm:text-sm py-2 px-3 sm:px-4 cursor-pointer flex-1 sm:flex-none inline-flex items-center justify-center">
+                                        <i className="fas fa-upload mr-1 sm:mr-2"></i>
+                                        Import CSV
+                                        <input
+                                            type="file"
+                                            accept=".csv"
+                                            className="hidden"
+                                            onChange={async (e) => {
+                                                const file = e.target.files?.[0];
+                                                if (!file) return;
+
+                                                const formData = new FormData();
+                                                formData.append('file', file);
+
+                                                try {
+                                                    const res = await api.post(`/elections/${id}/voters/import`, formData, {
+                                                        headers: { 'Content-Type': 'multipart/form-data' }
+                                                    });
+                                                    alert(res.data.message);
+                                                    const votersRes = await api.get(`/elections/${id}/voters`);
+                                                    setAllowedVoters(votersRes.data);
+                                                } catch (error: any) {
+                                                    alert(error.response?.data?.message || 'Failed to upload voters');
+                                                }
+                                            }}
+                                        />
+                                    </label>
+                                </div>
                             </div>
                         </div>
                         
@@ -792,10 +794,10 @@ function ElectionDetailsContent({ id }: { id: string }) {
                                             alert('❌ ' + (error.response?.data?.message || 'Failed to add voters'));
                                         }
                                     }}
-                                    className="mb-6 p-4 bg-gray-50 rounded-lg border"
+                                    className="mb-6 p-3 sm:p-4 bg-gray-50 rounded-lg border"
                                 >
-                                    <div className="flex justify-between items-center mb-4">
-                                        <h3 className="font-bold text-gray-900">Add Voters Manually</h3>
+                                    <div className="flex justify-between items-center mb-3 sm:mb-4">
+                                        <h3 className="text-base sm:text-lg font-bold text-gray-900">Add Voters Manually</h3>
                                         <button
                                             type="button"
                                             onClick={() => setNewVoters([...newVoters, { studentId: '', name: '', email: '' }])}
