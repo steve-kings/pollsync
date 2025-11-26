@@ -7,13 +7,18 @@ const PricingPlan = require('../models/PricingPlan');
 // @access  Public
 router.get('/', async (req, res) => {
     try {
+        console.log('📊 Fetching pricing plans...');
+        
         // Get all active plans
         let plans = await PricingPlan.getActivePlans();
+        console.log(`Found ${plans.length} pricing plans`);
         
         // If no plans exist, initialize defaults
         if (plans.length === 0) {
+            console.log('⚠️ No pricing plans found, initializing defaults...');
             await PricingPlan.initializeDefaultPlans();
             plans = await PricingPlan.getActivePlans();
+            console.log(`✅ Initialized ${plans.length} default plans`);
         }
         
         res.json({ 
@@ -29,6 +34,7 @@ router.get('/', async (req, res) => {
             }))
         });
     } catch (error) {
+        console.error('❌ Error fetching pricing:', error);
         res.status(500).json({ success: false, message: error.message });
     }
 });
