@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import api from '@/lib/api';
 import { io } from 'socket.io-client';
 
+
 interface Election {
     _id: string;
     title: string;
@@ -333,13 +334,22 @@ export default function DashboardPage() {
                                 : 'Ready to create your first election?'}
                         </p>
                     </div>
-                    <Link
-                        href="/dashboard/create-election"
-                        className="btn-primary shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all"
-                    >
-                        <i className="fas fa-plus mr-2"></i>
-                        Create New Election
-                    </Link>
+                    <div className="flex space-x-3">
+                        <Link
+                            href="/dashboard/ai-insights"
+                            className="btn-secondary shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all"
+                        >
+                            <i className="fas fa-brain mr-2"></i>
+                            AI Insights
+                        </Link>
+                        <Link
+                            href="/dashboard/create-election"
+                            className="btn-primary shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all"
+                        >
+                            <i className="fas fa-plus mr-2"></i>
+                            Create New Election
+                        </Link>
+                    </div>
                 </div>
 
                 {/* Shared Credits Banner */}

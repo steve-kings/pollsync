@@ -88,6 +88,11 @@ const UserSchema = new mongoose.Schema({
             default: false
         }
     }],
+    // AI Chatbot usage tracking (free tier: 5 messages/day)
+    chatbotUsage: {
+        count: { type: Number, default: 0 },
+        lastReset: { type: Date, default: Date.now }
+    },
     createdAt: {
         type: Date,
         default: Date.now

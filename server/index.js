@@ -141,6 +141,7 @@ app.use('/api/upload', require('./routes/upload'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/payment', require('./routes/payment'));
 app.use('/api/pricing', require('./routes/pricing'));
+app.use('/api/ai', require('./routes/ai'));
 
 // 404 handler
 app.use((req, res) => {

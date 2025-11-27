@@ -3,6 +3,7 @@
 import { Provider } from 'react-redux';
 import { store } from '@/store/store';
 import { AuthProvider } from '@/context/AuthContext';
+import AIChatbot from '@/components/AIChatbot';
 import './globals.css';
 
 export default function RootLayout({
@@ -25,6 +26,7 @@ export default function RootLayout({
                 <Provider store={store}>
                     <AuthProvider>
                         {children}
+                        <AIChatbot />
                     </AuthProvider>
                 </Provider>
             </body>
