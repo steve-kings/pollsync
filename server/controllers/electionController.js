@@ -297,32 +297,11 @@ exports.vote = async (req, res) => {
         candidate.voteCount += 1;
         await candidate.save();
 
-        // Deduct credit from election organizer (NEW SHARED CREDIT SYSTEM)
-        const User = require('../models/User');
-        const organizer = await User.findById(election.organizer);
-        
-        if (organizer) {
-            // Only deduct if election is using shared credits (not unlimited or legacy)
-            if (election.planType === 'shared_credits' && organizer.sharedCredits > 0) {
-                organizer.sharedCredits -= 1;
-                await organizer.save();
-                
-                console.log(`✅ Deducted 1 shared credit from ${organizer.username}. Remaining: ${organizer.sharedCredits}`);
-                
-                // Emit credit update to organizer's dashboard
-                const io = req.app.get('io');
-                if (io) {
-                    io.to(organizer._id.toString()).emit('credits_updated', {
-                        sharedCredits: organizer.sharedCredits,
-                        reason: 'vote_cast',
-                        electionId: election._id,
-                        electionTitle: election.title
-                    });
-                }
-            } else if (election.planType === 'shared_credits' && organizer.sharedCredits === 0) {
-                console.log(`⚠️  Warning: ${organizer.username} has no shared credits left but vote was allowed (election already created)`);
-            }
-        }
+        // Note: Credits are NOT deducted per vote
+        // Credits are only used for:
+        // 1. Creating elections (voter limit)
+        // 2. AI features (10 credits per use)
+        console.log(`✅ Vote recorded for election: ${election.title}`);
 
         // Emit vote update event
         const candidates = await Candidate.find({ election: election._id });
