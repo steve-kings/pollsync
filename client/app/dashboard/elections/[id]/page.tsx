@@ -277,28 +277,14 @@ function ElectionDetailsContent({ id }: { id: string }) {
                                 <h1 className="text-sm sm:text-lg font-bold text-gray-900 truncate">{election.title}</h1>
                                 <p className="text-xs text-gray-500 truncate">{election.organization}</p>
                             </div>
-                            {/* Package/Credits Badge */}
+                            {/* Voter Credits Badge */}
                             <div className="hidden md:flex items-center space-x-2 px-3 py-1.5 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg">
                                 <div>
-                                    <p className="text-xs text-green-600 font-medium">
-                                        {(election as any).packages && (election as any).packages.length > 1 
-                                            ? `${(election as any).packages.length} Packages` 
-                                            : 'Package'}
-                                    </p>
-                                    <p className="text-sm font-bold text-green-900 capitalize">
-                                        {(election as any).packages && (election as any).packages.length > 0
-                                            ? (election as any).packages.length === 1
-                                                ? (election as any).packages[0].packageName
-                                                : 'Multiple'
-                                            : ((election as any).packageUsed || election.planType || 'Free')}
-                                    </p>
-                                </div>
-                                <div className="border-l border-green-300 pl-2">
-                                    <p className="text-xs text-green-600 font-medium">Total Credits</p>
+                                    <p className="text-xs text-green-600 font-medium">Voter Limit</p>
                                     <p className="text-sm font-bold text-green-900">
-                                        {(election as any).totalCredits 
-                                            ? ((election as any).totalCredits >= 999999 ? '∞' : (election as any).totalCredits)
-                                            : ((election as any).creditsUsed || (election.voterLimit === -1 ? '∞' : election.voterLimit))}
+                                        {election.voterLimit === -1 
+                                            ? '∞ Unlimited' 
+                                            : `${election.voterLimit} voters`}
                                     </p>
                                 </div>
                                 <button
