@@ -3,16 +3,57 @@ const Candidate = require('../models/Candidate');
 const Vote = require('../models/Vote');
 const AllowedVoter = require('../models/AllowedVoter');
 
-// @desc    Create a new election
+// @desc    Create a new election (NEW SHARED CREDIT SYSTEM)
 // @route   POST /api/elections
 // @access  Private
 exports.createElection = async (req, res) => {
     try {
-        const { title, organization, description, startDate, endDate, thumbnailUrl } = req.body;
+        const { title, organization, description, startDate, endDate, thumbnailUrl, useUnlimited, estimatedVoters } = req.body;
 
-        // req.electionCredit is attached by requireElectionCredit middleware
-        const credit = req.electionCredit;
+        // req.userWithCredits is attached by requireElectionCredit middleware
+        const user = req.userWithCredits;
+        const creditSummary = req.creditSummary;
 
+        console.log('=== Creating Election ===');
+        console.log('User:', user.username);
+        console.log('Use Unlimited:', useUnlimited);
+        console.log('Estimated Voters:', estimatedVoters);
+        console.log('Shared Credits:', user.sharedCredits);
+        console.log('Available Unlimited Packages:', creditSummary.unlimitedPackages.available);
+
+        let voterLimit, planType, transactionId;
+
+        // Determine which credit type to use
+        if (useUnlimited && creditSummary.unlimitedPackages.available > 0) {
+            // Use unlimited package (will link to election after creation)
+            voterLimit = -1;
+            planType = 'unlimited';
+            transactionId = 'UNLIMITED_PENDING'; // Will be updated after election creation
+            console.log('✅ Will use unlimited package');
+        } else {
+            // Use shared credits
+            const votersNeeded = parseInt(estimatedVoters) || 10; // Default to 10 if not specified
+            
+            if (user.sharedCredits < votersNeeded) {
+                return res.status(400).json({ 
+                    message: `Insufficient credits. You need ${votersNeeded} credits but only have ${user.sharedCredits}.`,
+                    available: user.sharedCredits,
+                    needed: votersNeeded
+                });
+            }
+
+            const result = user.deductCredits(votersNeeded);
+            if (!result.success) {
+                return res.status(400).json({ message: result.message, available: result.available });
+            }
+
+            voterLimit = votersNeeded;
+            planType = 'shared_credits';
+            transactionId = 'SHARED_POOL';
+            console.log(`✅ Deducted ${votersNeeded} shared credits. Remaining: ${result.remaining}`);
+        }
+
+        // Create election
         const election = new Election({
             title,
             organization,
@@ -21,36 +62,40 @@ exports.createElection = async (req, res) => {
             endDate,
             organizer: req.user._id,
             thumbnailUrl: thumbnailUrl || '',
-            voterLimit: credit.voterLimit, // Store the voter limit from the plan
-            planType: credit.plan, // Store which plan was used
+            voterLimit: voterLimit,
+            planType: planType,
             packages: [{
-                packageName: credit.plan,
-                credits: credit.voterLimit,
-                transactionId: credit.transactionId || '',
+                packageName: planType,
+                credits: voterLimit,
+                transactionId: transactionId,
                 addedDate: new Date()
             }],
             // Legacy fields for backward compatibility
-            packageUsed: credit.plan,
-            creditsUsed: credit.voterLimit === -1 ? 999999 : credit.voterLimit,
-            transactionId: credit.transactionId || ''
+            packageUsed: planType,
+            creditsUsed: voterLimit === -1 ? 999999 : voterLimit,
+            transactionId: transactionId
         });
 
         const createdElection = await election.save();
 
-        // Mark the credit as used and link it to this election
-        const User = require('../models/User');
-        await User.findByIdAndUpdate(
-            req.user._id,
-            {
-                $set: {
-                    'electionCredits.$[elem].used': true,
-                    'electionCredits.$[elem].electionId': createdElection._id
-                }
-            },
-            {
-                arrayFilters: [{ 'elem._id': credit._id }]
+        // Update unlimited package with election ID if used
+        if (useUnlimited && voterLimit === -1) {
+            const result = user.useUnlimitedPackage(createdElection._id);
+            if (result.success) {
+                transactionId = result.package.transactionId;
+                // Update election with correct transaction ID
+                createdElection.transactionId = transactionId;
+                createdElection.packages[0].transactionId = transactionId;
+                await createdElection.save();
             }
-        );
+        }
+
+        // Save user with updated credits
+        await user.save();
+
+        console.log('✅ Election created:', createdElection._id);
+        console.log('   Voter Limit:', voterLimit === -1 ? 'Unlimited' : voterLimit);
+        console.log('   Plan Type:', planType);
 
         res.status(201).json(createdElection);
     } catch (error) {

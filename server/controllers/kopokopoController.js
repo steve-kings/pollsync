@@ -145,29 +145,41 @@ exports.initiateSTKPush = async (req, res) => {
                 await txn.save();
                 console.log('✅ TEST: Transaction updated to Success');
 
-                // Add credit to user's account
+                // Add credit to user's account (NEW SHARED CREDIT SYSTEM)
                 if (userId && planDetails) {
                     const user = await User.findById(userId);
 
                     if (user) {
                         // Check if credit already exists
-                        const existingCredit = user.electionCredits.find(
+                        const existingCredit = user.creditHistory && user.creditHistory.find(
                             c => c.transactionId === testTransactionId
                         );
 
                         if (!existingCredit) {
-                            user.electionCredits.push({
-                                ...planDetails,
-                                transactionId: testTransactionId,
-                                paymentDate: new Date()
-                            });
+                            // NEW SYSTEM: Add to shared credits or unlimited packages
+                            if (planDetails.voterLimit === -1) {
+                                // Unlimited package
+                                user.addUnlimitedPackage({
+                                    transactionId: testTransactionId,
+                                    price: paymentAmount,
+                                    plan: planDetails.plan
+                                });
+                                console.log(`✅ TEST: Unlimited package added to user ${user.username}`);
+                                console.log(`   Plan: ${planDetails.plan}`);
+                                console.log(`   Can be used for 1 election with unlimited voters`);
+                            } else {
+                                // Regular credits
+                                user.addCredits(planDetails.voterLimit, {
+                                    transactionId: testTransactionId,
+                                    price: paymentAmount,
+                                    plan: planDetails.plan
+                                });
+                                console.log(`✅ TEST: ${planDetails.voterLimit} credits added to user ${user.username}`);
+                                console.log(`   Plan: ${planDetails.plan}`);
+                                console.log(`   Total shared credits: ${user.sharedCredits}`);
+                            }
                             
                             await user.save();
-
-                            console.log(`✅ TEST: Package added to user ${user.username}`);
-                            console.log(`   Plan: ${planDetails.plan}`);
-                            console.log(`   Voter Limit: ${planDetails.voterLimit}`);
-                            console.log(`   Package can be used for 1 election`);
 
                             // Emit socket event
                             if (io) {
@@ -177,6 +189,9 @@ exports.initiateSTKPush = async (req, res) => {
                                     transactionId: testTransactionId,
                                     plan: planDetails.plan,
                                     voterLimit: planDetails.voterLimit,
+                                    isUnlimited: planDetails.voterLimit === -1,
+                                    sharedCredits: user.sharedCredits,
+                                    unlimitedPackages: user.unlimitedPackages ? user.unlimitedPackages.filter(p => !p.used).length : 0,
                                     timestamp: Date.now()
                                 });
                                 console.log('✅ TEST: Socket event emitted to room:', userId);
@@ -462,26 +477,39 @@ exports.handleCallback = async (req, res) => {
 
                 if (user) {
                     // Check if credit already added (prevent duplicates)
-                    const existingCredit = user.electionCredits.find(
+                    const existingCredit = user.creditHistory && user.creditHistory.find(
                         credit => credit.transactionId === mpesaReceiptNumber
                     );
 
                     if (existingCredit) {
                         console.log('⚠️  Credit already added for this transaction');
                     } else {
-                        // Add election package
-                        user.electionCredits.push({
-                            ...planDetails,
-                            transactionId: mpesaReceiptNumber,
-                            price: paymentAmount,
-                            paymentDate: new Date(resource.timestamp || Date.now())
-                        });
+                        // NEW SHARED CREDIT SYSTEM
+                        if (planDetails.voterLimit === -1) {
+                            // Unlimited package
+                            user.addUnlimitedPackage({
+                                transactionId: mpesaReceiptNumber,
+                                price: paymentAmount,
+                                plan: planDetails.plan
+                            });
+                            console.log(`✅ User ${user.username} received unlimited package`);
+                            console.log(`   Transaction ID: ${mpesaReceiptNumber}`);
+                            console.log(`   Plan: ${planDetails.plan}`);
+                            console.log(`   Can be used for 1 election with unlimited voters`);
+                        } else {
+                            // Regular credits added to shared pool
+                            user.addCredits(planDetails.voterLimit, {
+                                transactionId: mpesaReceiptNumber,
+                                price: paymentAmount,
+                                plan: planDetails.plan
+                            });
+                            console.log(`✅ User ${user.username} received ${planDetails.voterLimit} shared credits`);
+                            console.log(`   Transaction ID: ${mpesaReceiptNumber}`);
+                            console.log(`   Plan: ${planDetails.plan}`);
+                            console.log(`   Total shared credits: ${user.sharedCredits}`);
+                        }
 
                         await user.save();
-                        console.log(`✅ User ${user.username} received ${planDetails.plan} election package`);
-                        console.log(`   Transaction ID: ${mpesaReceiptNumber}`);
-                        console.log(`   Voter Limit: ${planDetails.voterLimit === -1 ? 'Unlimited' : planDetails.voterLimit}`);
-                        console.log(`   Package can be used for 1 election`);
 
                         // Mark transaction as processed
                         transaction.processed = true;
@@ -489,10 +517,11 @@ exports.handleCallback = async (req, res) => {
 
                         // Send payment success email (non-blocking)
                         const voterLimit = planDetails.voterLimit === -1 ? 'Unlimited' : planDetails.voterLimit;
+                        const creditType = planDetails.voterLimit === -1 ? 'unlimited package' : `${planDetails.voterLimit} voter credits`;
                         const paymentTemplate = emailTemplates.paymentSuccess(
                             user.username,
                             paymentAmount,
-                            `${planDetails.plan} package (${voterLimit} voters)`
+                            `${planDetails.plan} (${creditType})`
                         );
                         sendEmail({
                             to: user.email,
@@ -508,6 +537,9 @@ exports.handleCallback = async (req, res) => {
                                 transactionId: mpesaReceiptNumber,
                                 plan: planDetails.plan,
                                 voterLimit: planDetails.voterLimit,
+                                isUnlimited: planDetails.voterLimit === -1,
+                                sharedCredits: user.sharedCredits,
+                                unlimitedPackages: user.unlimitedPackages ? user.unlimitedPackages.filter(p => !p.used).length : 0,
                                 timestamp: resource.timestamp || Date.now()
                             });
                             console.log('✅ Socket event emitted to user');

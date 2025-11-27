@@ -231,7 +231,7 @@ exports.getCreditStatus = async (req, res) => {
     }
 };
 
-// @desc    Get real-time credit status
+// @desc    Get real-time credit status (NEW SHARED CREDIT SYSTEM)
 // @route   GET /api/auth/credits/realtime
 // @access  Private
 exports.getRealtimeCredits = async (req, res) => {
@@ -242,20 +242,10 @@ exports.getRealtimeCredits = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
+        // Get credit summary using new method
         const creditSummary = user.getCreditSummary();
 
-        res.json({
-            electionPackages: {
-                total: user.electionCredits.length,
-                available: user.electionCredits.filter(c => !c.used).length,
-                used: user.electionCredits.filter(c => c.used).length
-            },
-            availablePackages: creditSummary.packages.available,
-            usedPackages: creditSummary.packages.used,
-            message: creditSummary.needsPackage
-                ? 'No election packages available. Purchase a package to create an election.' 
-                : `You have ${creditSummary.electionPackages.available} available package(s).`
-        });
+        res.json(creditSummary);
     } catch (error) {
         console.error('Get realtime credits error:', error);
         res.status(500).json({ message: error.message });

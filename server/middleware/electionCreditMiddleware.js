@@ -1,9 +1,9 @@
 const User = require('../models/User');
 
-// Middleware to check if user has available election credits
+// Middleware to check if user has available election credits (NEW SHARED CREDIT SYSTEM)
 exports.requireElectionCredit = async (req, res, next) => {
     try {
-        console.log('=== Election Credit Check ===');
+        console.log('=== Election Credit Check (Shared System) ===');
         console.log('User ID:', req.user._id || req.user.id);
 
         const user = await User.findById(req.user._id || req.user.id);
@@ -14,27 +14,30 @@ exports.requireElectionCredit = async (req, res, next) => {
         }
 
         console.log('User:', user.username);
-        console.log('Total Credits:', user.electionCredits?.length || 0);
+        console.log('Shared Credits:', user.sharedCredits || 0);
+        console.log('Unlimited Packages:', user.unlimitedPackages ? user.unlimitedPackages.filter(p => !p.used).length : 0);
 
-        // Check if user has any unused credits
-        const availableCredit = user.electionCredits.find(credit => !credit.used);
-
-        if (!availableCredit) {
-            console.log('ERROR: No available credits found');
-            console.log('All credits:', JSON.stringify(user.electionCredits, null, 2));
+        // Get credit summary using new method
+        const creditSummary = user.getCreditSummary();
+        
+        // Check if user can create election
+        if (!user.canCreateElection()) {
+            console.log('ERROR: No credits or unlimited packages available');
             return res.status(403).json({
                 success: false,
-                message: 'No election credits available. Please purchase a plan first.',
+                message: 'No credits available. Please purchase a plan to create an election.',
                 redirectTo: '/pricing',
-                totalCredits: user.electionCredits?.length || 0,
-                usedCredits: user.electionCredits?.filter(c => c.used).length || 0
+                creditSummary: creditSummary
             });
         }
 
-        console.log('✅ Available credit found:', availableCredit.plan, availableCredit.voterLimit, 'voters');
+        console.log('✅ User can create election');
+        console.log('   Shared Credits:', user.sharedCredits || 0);
+        console.log('   Available Unlimited Packages:', creditSummary.unlimitedPackages.available);
 
-        // Attach the credit to request for later use
-        req.electionCredit = availableCredit;
+        // Attach user to request for later use (election controller will handle credit deduction)
+        req.userWithCredits = user;
+        req.creditSummary = creditSummary;
         next();
     } catch (error) {
         console.error('Election credit check error:', error);

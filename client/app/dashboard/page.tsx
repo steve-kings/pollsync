@@ -25,12 +25,23 @@ interface Election {
 }
 
 interface CreditStatus {
+    sharedCredits: number;
+    unlimitedPackages: {
+        available: number;
+        used: number;
+        total: number;
+    };
+    lowCredits: boolean;
+    canCreateElection: boolean;
+    needsCredits: boolean;
+    warning: string | null;
+    // Legacy support
     electionPackages: {
         total: number;
         available: number;
         used: number;
     };
-    message: string;
+    message?: string;
 }
 
 export default function DashboardPage() {
@@ -133,8 +144,12 @@ export default function DashboardPage() {
         // Payment success
         socket.on('payment_success', async (data: any) => {
             console.log('💳 Payment success:', data);
-            const voterLimit = data.voterLimit === -1 ? 'Unlimited' : data.voterLimit;
-            showNotification(`✅ Payment successful! ${data.plan} package (${voterLimit} voters)`);
+            
+            if (data.isUnlimited) {
+                showNotification(`✅ Payment successful! Unlimited package added`);
+            } else {
+                showNotification(`✅ Payment successful! ${data.voterLimit} voter credits added`);
+            }
             
             // Refresh with realtime endpoint
             const creditsRes = await api.get('/auth/credits/realtime');
@@ -323,48 +338,139 @@ export default function DashboardPage() {
                     </Link>
                 </div>
 
-                {/* Vote Credits Banner */}
+                {/* Shared Credits Banner */}
                 {creditStatus && (
                     <div className={`mb-6 p-6 rounded-xl shadow-sm border-2 ${
-                        creditStatus.electionPackages.available === 0 
+                        creditStatus.needsCredits 
                             ? 'bg-red-50 border-red-200' 
+                            : creditStatus.lowCredits
+                            ? 'bg-yellow-50 border-yellow-200'
                             : 'bg-green-50 border-green-200'
                     }`}>
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            <div className="flex items-center space-x-3 sm:space-x-4">
-                                <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center ${
-                                    creditStatus.electionPackages.available === 0 
-                                        ? 'bg-red-100 text-red-600' 
-                                        : 'bg-green-100 text-green-600'
-                                }`}>
-                                    <i className="fas fa-box text-xl sm:text-2xl"></i>
-                                </div>
-                                <div>
-                                    <h3 className="text-base sm:text-lg font-bold text-gray-900">Election Packages</h3>
-                                    <p className="text-xs sm:text-sm text-gray-600">{creditStatus.message}</p>
-                                </div>
-                            </div>
-                            <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-                                <div className="text-center">
-                                    <div className={`text-3xl sm:text-4xl font-bold ${
-                                        creditStatus.electionPackages.available === 0 
-                                            ? 'text-red-600' 
-                                            : 'text-green-600'
+                        <div className="flex flex-col gap-4">
+                            {/* Header */}
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div className="flex items-center space-x-3 sm:space-x-4">
+                                    <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center ${
+                                        creditStatus.needsCredits 
+                                            ? 'bg-red-100 text-red-600' 
+                                            : creditStatus.lowCredits
+                                            ? 'bg-yellow-100 text-yellow-600'
+                                            : 'bg-green-100 text-green-600'
                                     }`}>
-                                        {creditStatus.electionPackages.available}
+                                        <i className="fas fa-coins text-xl sm:text-2xl"></i>
                                     </div>
-                                    <div className="text-xs text-gray-500 mt-1">Available Packages</div>
+                                    <div>
+                                        <h3 className="text-base sm:text-lg font-bold text-gray-900">Your Credits</h3>
+                                        <p className="text-xs sm:text-sm text-gray-600">
+                                            {creditStatus.needsCredits 
+                                                ? 'No credits available - Purchase to create elections' 
+                                                : creditStatus.lowCredits
+                                                ? 'Running low on credits'
+                                                : 'Use credits across all your elections'}
+                                        </p>
+                                    </div>
                                 </div>
-                                {creditStatus.electionPackages.available === 0 && (
+                                {creditStatus.needsCredits && (
                                     <Link
                                         href="/pricing"
-                                        className="px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold transition-all bg-red-600 hover:bg-red-700 text-white text-sm sm:text-base"
+                                        className="px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold transition-all bg-red-600 hover:bg-red-700 text-white text-sm sm:text-base whitespace-nowrap"
                                     >
                                         <i className="fas fa-plus mr-2"></i>
-                                        Buy Package
+                                        Buy Credits
                                     </Link>
                                 )}
                             </div>
+
+                            {/* Credit Stats */}
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                {/* Shared Credits */}
+                                <div className="bg-white rounded-lg p-4 text-center border border-gray-200">
+                                    <div className={`text-3xl sm:text-4xl font-bold ${
+                                        creditStatus.sharedCredits === 0 
+                                            ? 'text-red-600' 
+                                            : creditStatus.lowCredits
+                                            ? 'text-yellow-600'
+                                            : 'text-green-600'
+                                    }`}>
+                                        {creditStatus.sharedCredits}
+                                    </div>
+                                    <div className="text-xs text-gray-500 mt-1">Voter Credits</div>
+                                    <div className="text-xs text-gray-400 mt-1">Shared Pool</div>
+                                </div>
+
+                                {/* Unlimited Packages */}
+                                <div className="bg-white rounded-lg p-4 text-center border border-gray-200">
+                                    <div className={`text-3xl sm:text-4xl font-bold ${
+                                        creditStatus.unlimitedPackages.available === 0 
+                                            ? 'text-gray-400' 
+                                            : 'text-purple-600'
+                                    }`}>
+                                        {creditStatus.unlimitedPackages.available}
+                                    </div>
+                                    <div className="text-xs text-gray-500 mt-1">Unlimited</div>
+                                    <div className="text-xs text-gray-400 mt-1">Packages</div>
+                                </div>
+
+                                {/* Can Create */}
+                                <div className="bg-white rounded-lg p-4 text-center border border-gray-200 col-span-2 sm:col-span-1">
+                                    <div className={`text-2xl sm:text-3xl font-bold ${
+                                        creditStatus.canCreateElection 
+                                            ? 'text-green-600' 
+                                            : 'text-red-600'
+                                    }`}>
+                                        {creditStatus.canCreateElection ? (
+                                            <><i className="fas fa-check-circle"></i> Ready</>
+                                        ) : (
+                                            <><i className="fas fa-times-circle"></i> Need Credits</>
+                                        )}
+                                    </div>
+                                    <div className="text-xs text-gray-500 mt-1">Election Status</div>
+                                </div>
+                            </div>
+
+                            {/* Legacy Packages Info */}
+                            {creditStatus.electionPackages && creditStatus.electionPackages.available > 0 && (
+                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                    <div className="flex items-start space-x-3">
+                                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <i className="fas fa-box text-blue-600"></i>
+                                        </div>
+                                        <div className="flex-1">
+                                            <h4 className="text-sm font-semibold text-blue-900 mb-1">
+                                                Legacy Election Packages
+                                            </h4>
+                                            <p className="text-xs text-blue-700 mb-2">
+                                                You have {creditStatus.electionPackages.available} legacy package{creditStatus.electionPackages.available > 1 ? 's' : ''} available. 
+                                                Each can be used for one election.
+                                            </p>
+                                            <div className="flex items-center gap-4 text-xs">
+                                                <span className="text-blue-600">
+                                                    <i className="fas fa-check-circle mr-1"></i>
+                                                    Available: {creditStatus.electionPackages.available}
+                                                </span>
+                                                <span className="text-gray-500">
+                                                    <i className="fas fa-history mr-1"></i>
+                                                    Used: {creditStatus.electionPackages.used}
+                                                </span>
+                                            </div>
+                                            <div className="mt-2 pt-2 border-t border-blue-200">
+                                                <p className="text-xs text-blue-600">
+                                                    💡 Tip: Consider migrating to shared credits for more flexibility
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Warning Message */}
+                            {creditStatus.warning && (
+                                <div className="bg-yellow-100 border border-yellow-300 rounded-lg p-3 flex items-start space-x-2">
+                                    <i className="fas fa-exclamation-triangle text-yellow-600 mt-0.5"></i>
+                                    <p className="text-sm text-yellow-800">{creditStatus.warning}</p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}
