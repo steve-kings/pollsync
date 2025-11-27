@@ -449,7 +449,7 @@ export default function HomePage() {
 
                     <div className="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center">
                         <p className="text-gray-500 text-sm mb-4 md:mb-0">
-                            &copy; 2025 PollSync. Empowering Democratic Decisions Across Africa
+                            &copy; 2025 PollSync. Developed by <a href="https://kingcreation.co.ke" target="_blank" rel="noopener noreferrer" className="text-green-600 hover:text-green-700 font-medium">King Creation Agency</a>
                         </p>
                         <div className="flex space-x-8 text-sm text-gray-500">
                             <Link href="#" className="hover:text-green-600">Privacy Policy</Link>

@@ -340,7 +340,7 @@ export default function FeaturesPage() {
                             <Link href="/pricing" className="hover:text-green-600 transition-colors">Pricing</Link>
                         </div>
                         <p className="text-sm text-gray-600">
-                            <i className="fas fa-heart text-red-500"></i> Built with love in Kenya &copy; 2025 PollSync
+                            &copy; 2025 PollSync. Developed by <a href="https://kingcreation.co.ke" target="_blank" rel="noopener noreferrer" className="text-green-600 hover:text-green-700 font-medium">King Creation Agency</a>
                         </p>
                     </div>
                 </div>
