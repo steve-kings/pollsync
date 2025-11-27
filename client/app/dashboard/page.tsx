@@ -161,7 +161,7 @@ export default function DashboardPage() {
             console.log('💰 Credits updated:', data);
             
             if (data.reason === 'vote_cast') {
-                showNotification(`🗳️ Vote cast in "${data.electionTitle}" - 1 credit used`);
+                showNotification(`🗳️ Vote cast in "${data.electionTitle}" - 1 credit deducted`);
             } else {
                 showNotification('💰 Your credits have been updated');
             }
@@ -169,6 +169,10 @@ export default function DashboardPage() {
             // Refresh with realtime endpoint
             const creditsRes = await api.get('/auth/credits/realtime');
             setCreditStatus(creditsRes.data);
+            
+            // Also refresh elections to update stats
+            const electionsRes = await api.get('/elections');
+            setElections(electionsRes.data);
         });
 
         // New vote cast
@@ -361,13 +365,13 @@ export default function DashboardPage() {
                                         <i className="fas fa-coins text-xl sm:text-2xl"></i>
                                     </div>
                                     <div>
-                                        <h3 className="text-base sm:text-lg font-bold text-gray-900">Your Credits</h3>
+                                        <h3 className="text-base sm:text-lg font-bold text-gray-900">Your Voter Credits</h3>
                                         <p className="text-xs sm:text-sm text-gray-600">
                                             {creditStatus.needsCredits 
-                                                ? 'No credits available - Purchase to create elections' 
+                                                ? 'Purchase credits to create elections' 
                                                 : creditStatus.lowCredits
-                                                ? 'Running low on credits'
-                                                : 'Use credits across all your elections'}
+                                                ? 'Running low - consider buying more'
+                                                : 'Credits from all your purchases'}
                                         </p>
                                     </div>
                                 </div>
@@ -384,22 +388,22 @@ export default function DashboardPage() {
 
                             {/* Credit Stats */}
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                                {/* Shared Credits */}
+                                {/* Recent Credits */}
                                 <div className="bg-white rounded-lg p-4 text-center border border-gray-200">
                                     <div className={`text-3xl sm:text-4xl font-bold ${
                                         creditStatus.sharedCredits === 0 
-                                            ? 'text-red-600' 
+                                            ? 'text-gray-400' 
                                             : creditStatus.lowCredits
                                             ? 'text-yellow-600'
                                             : 'text-green-600'
                                     }`}>
                                         {creditStatus.sharedCredits}
                                     </div>
-                                    <div className="text-xs text-gray-500 mt-1">Voter Credits</div>
-                                    <div className="text-xs text-gray-400 mt-1">Shared Pool</div>
+                                    <div className="text-xs text-gray-500 mt-1">Recent Credits</div>
+                                    <div className="text-xs text-gray-400 mt-1">Latest purchases</div>
                                 </div>
 
-                                {/* Unlimited Packages */}
+                                {/* Unlimited Credits */}
                                 <div className="bg-white rounded-lg p-4 text-center border border-gray-200">
                                     <div className={`text-3xl sm:text-4xl font-bold ${
                                         creditStatus.unlimitedPackages.available === 0 
@@ -409,7 +413,7 @@ export default function DashboardPage() {
                                         {creditStatus.unlimitedPackages.available}
                                     </div>
                                     <div className="text-xs text-gray-500 mt-1">Unlimited</div>
-                                    <div className="text-xs text-gray-400 mt-1">Packages</div>
+                                    <div className="text-xs text-gray-400 mt-1">No voter limit</div>
                                 </div>
 
                                 {/* Can Create */}
@@ -429,35 +433,26 @@ export default function DashboardPage() {
                                 </div>
                             </div>
 
-                            {/* Legacy Packages Info */}
+                            {/* Previous Purchases Info */}
                             {creditStatus.electionPackages && creditStatus.electionPackages.available > 0 && (
                                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                                     <div className="flex items-start space-x-3">
                                         <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                            <i className="fas fa-box text-blue-600"></i>
+                                            <i className="fas fa-coins text-blue-600"></i>
                                         </div>
                                         <div className="flex-1">
                                             <h4 className="text-sm font-semibold text-blue-900 mb-1">
-                                                Legacy Election Packages
+                                                Previous Purchases
                                             </h4>
                                             <p className="text-xs text-blue-700 mb-2">
-                                                You have {creditStatus.electionPackages.available} legacy package{creditStatus.electionPackages.available > 1 ? 's' : ''} available. 
-                                                Each can be used for one election.
+                                                You have {creditStatus.electionPackages.available * 10} voter credits from previous purchases.
+                                                These can be used for your elections.
                                             </p>
                                             <div className="flex items-center gap-4 text-xs">
                                                 <span className="text-blue-600">
                                                     <i className="fas fa-check-circle mr-1"></i>
-                                                    Available: {creditStatus.electionPackages.available}
+                                                    {creditStatus.electionPackages.available} purchase{creditStatus.electionPackages.available > 1 ? 's' : ''} = {creditStatus.electionPackages.available * 10} credits
                                                 </span>
-                                                <span className="text-gray-500">
-                                                    <i className="fas fa-history mr-1"></i>
-                                                    Used: {creditStatus.electionPackages.used}
-                                                </span>
-                                            </div>
-                                            <div className="mt-2 pt-2 border-t border-blue-200">
-                                                <p className="text-xs text-blue-600">
-                                                    💡 Tip: Consider migrating to shared credits for more flexibility
-                                                </p>
                                             </div>
                                         </div>
                                     </div>
@@ -471,6 +466,94 @@ export default function DashboardPage() {
                                     <p className="text-sm text-yellow-800">{creditStatus.warning}</p>
                                 </div>
                             )}
+                        </div>
+                    </div>
+                )}
+
+                {/* Total Credits Summary */}
+                {creditStatus && (
+                    <div className="mb-6 bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-200 rounded-xl p-6 shadow-sm">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center space-x-3">
+                                <div className="w-12 h-12 bg-purple-500 text-white rounded-xl flex items-center justify-center shadow-lg">
+                                    <i className="fas fa-wallet text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold text-purple-900">Your Total Credits</h3>
+                                    <p className="text-xs text-purple-600">All voter credits from your purchases</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {/* Recent Purchases (Shared Credits) */}
+                            <div className="bg-white rounded-lg p-4 border-l-4 border-green-500">
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="text-xs font-semibold text-gray-600 uppercase">Recent Purchases</span>
+                                    <i className="fas fa-coins text-green-500"></i>
+                                </div>
+                                <div className="text-3xl font-bold text-green-600 mb-1">
+                                    {creditStatus.sharedCredits}
+                                </div>
+                                <p className="text-xs text-gray-500">Voter credits available</p>
+                            </div>
+
+                            {/* Previous Purchases */}
+                            <div className="bg-white rounded-lg p-4 border-l-4 border-blue-500">
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="text-xs font-semibold text-gray-600 uppercase">Previous Purchases</span>
+                                    <i className="fas fa-history text-blue-500"></i>
+                                </div>
+                                <div className="text-3xl font-bold text-blue-600 mb-1">
+                                    {creditStatus.electionPackages.available * 10}
+                                </div>
+                                <p className="text-xs text-gray-500">
+                                    From {creditStatus.electionPackages.available} earlier purchase{creditStatus.electionPackages.available !== 1 ? 's' : ''}
+                                </p>
+                            </div>
+
+                            {/* Unlimited Credits */}
+                            <div className="bg-white rounded-lg p-4 border-l-4 border-purple-500">
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="text-xs font-semibold text-gray-600 uppercase">Unlimited</span>
+                                    <i className="fas fa-infinity text-purple-500"></i>
+                                </div>
+                                <div className="text-3xl font-bold text-purple-600 mb-1">
+                                    {creditStatus.unlimitedPackages.available}
+                                </div>
+                                <p className="text-xs text-gray-500">Unlimited voter credits</p>
+                            </div>
+                        </div>
+
+                        {/* Grand Total */}
+                        <div className="mt-4 pt-4 border-t-2 border-purple-200">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm font-semibold text-purple-900">Total Available Credits</p>
+                                    <p className="text-xs text-purple-600">You can create elections with this many voters</p>
+                                </div>
+                                <div className="text-right">
+                                    <div className="text-3xl font-bold text-purple-900">
+                                        {creditStatus.unlimitedPackages.available > 0 ? (
+                                            <>
+                                                <i className="fas fa-infinity mr-2"></i>
+                                                Unlimited
+                                            </>
+                                        ) : (
+                                            <>
+                                                {creditStatus.sharedCredits + (creditStatus.electionPackages.available * 10)}
+                                                <span className="text-lg text-purple-600 ml-2">credits</span>
+                                            </>
+                                        )}
+                                    </div>
+                                    <p className="text-xs text-purple-600 mt-1">
+                                        {creditStatus.sharedCredits > 0 && `${creditStatus.sharedCredits} recent`}
+                                        {creditStatus.sharedCredits > 0 && creditStatus.electionPackages.available > 0 && ' + '}
+                                        {creditStatus.electionPackages.available > 0 && `${creditStatus.electionPackages.available * 10} previous`}
+                                        {creditStatus.unlimitedPackages.available > 0 && ` + unlimited`}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )}

@@ -297,24 +297,31 @@ exports.vote = async (req, res) => {
         candidate.voteCount += 1;
         await candidate.save();
 
-        // Deduct vote credit from election organizer
+        // Deduct credit from election organizer (NEW SHARED CREDIT SYSTEM)
         const User = require('../models/User');
         const organizer = await User.findById(election.organizer);
         
-        if (organizer && organizer.voteCredits > 0) {
-            organizer.voteCredits -= 1;
-            await organizer.save();
-            
-            console.log(`✅ Deducted 1 vote credit from ${organizer.username}. Remaining: ${organizer.voteCredits}`);
-            
-            // Emit credit update to organizer's dashboard
-            const io = req.app.get('io');
-            io.to(organizer._id.toString()).emit('credits_updated', {
-                voteCredits: organizer.voteCredits,
-                reason: 'vote_cast',
-                electionId: election._id,
-                electionTitle: election.title
-            });
+        if (organizer) {
+            // Only deduct if election is using shared credits (not unlimited or legacy)
+            if (election.planType === 'shared_credits' && organizer.sharedCredits > 0) {
+                organizer.sharedCredits -= 1;
+                await organizer.save();
+                
+                console.log(`✅ Deducted 1 shared credit from ${organizer.username}. Remaining: ${organizer.sharedCredits}`);
+                
+                // Emit credit update to organizer's dashboard
+                const io = req.app.get('io');
+                if (io) {
+                    io.to(organizer._id.toString()).emit('credits_updated', {
+                        sharedCredits: organizer.sharedCredits,
+                        reason: 'vote_cast',
+                        electionId: election._id,
+                        electionTitle: election.title
+                    });
+                }
+            } else if (election.planType === 'shared_credits' && organizer.sharedCredits === 0) {
+                console.log(`⚠️  Warning: ${organizer.username} has no shared credits left but vote was allowed (election already created)`);
+            }
         }
 
         // Emit vote update event
